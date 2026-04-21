@@ -32,7 +32,6 @@
   .apply-btn{background:var(--gold);color:var(--bg);border:none;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:7px 16px;cursor:pointer;}
   .apply-btn:active{background:var(--gold-l);}
   .google-link{font-size:9px;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,168,76,.3);padding-bottom:1px;white-space:nowrap;margin-left:auto;}
-  .last-set{font-size:9px;color:var(--muted);width:100%;}
 
   .kpi-grid{display:flex;flex-wrap:wrap;gap:2px;background:var(--border);margin:2px 0;}
   .kpi{background:var(--bg2);padding:16px 20px;flex:1 1 150px;}
@@ -49,7 +48,7 @@
 
   .section-title{font-size:9px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;padding:14px 20px 8px;}
   .tbl-wrap{background:var(--bg2);overflow-x:auto;margin:0 0 2px;}
-  table{width:100%;border-collapse:collapse;font-size:11px;min-width:480px;}
+  table{width:100%;border-collapse:collapse;font-size:11px;min-width:280px;}
   thead th{padding:8px 12px;text-align:right;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);background:var(--bg3);font-weight:400;border-bottom:1px solid var(--border);}
   thead th:first-child{text-align:left;}
   tbody tr{border-bottom:1px solid rgba(255,255,255,.03);}
@@ -76,17 +75,16 @@
   <span class="price-unit">EUR/oz</span>
   <button class="apply-btn" onclick="applyPrice()">&#10003; Anwenden</button>
   <a class="google-link" href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">&#128269; Google</a>
-  <div class="last-set" id="lastSet">Zuletzt gesetzt: April 2026 (Startwert)</div>
 </div>
 
 <div class="kpi-grid" id="kpiGrid"></div>
 <div class="buy-grid" id="buyGrid"></div>
 
-<div class="section-title">Jahresuebersicht</div>
+<div class="section-title">Jahresübersicht</div>
 <div class="tbl-wrap">
   <table>
     <thead><tr>
-      <th>Datum</th><th>EUR/oz</th><th>Unzen</th><th>Investiert</th><th>Wert</th><th>G/V EUR</th><th>G/V %</th>
+      <th>Datum</th><th>EUR/oz</th><th>Wert</th><th>G/V %</th>
     </tr></thead>
     <tbody id="tbody"></tbody>
   </table>
@@ -162,11 +160,9 @@ function renderApp(livePrice){
   document.getElementById('buyGrid').innerHTML=BUYS.map((b,i)=>{
     const val=b.oz*livePrice,g=val-b.inv,gP=g/b.inv*100;
     return '<div class="buy-card"><div class="buy-ttl">Kauf '+(i+1)+' \u00B7 '+b.date+'</div>'+
-      '<div class="brow"><span>Kaufkurs</span><span>'+fe(b.ppo)+'/oz</span></div>'+
       '<div class="brow"><span>Investiert</span><span>'+fe(b.inv,0)+'</span></div>'+
-      '<div class="brow"><span>Unzen</span><span>'+f(b.oz,4)+' oz</span></div>'+
       '<div class="brow"><span>Aktueller Wert</span><span>'+fe(val,0)+'</span></div>'+
-      '<div class="brow"><span>Gewinn / Verlust</span><span class="'+(g>=0?'pos':'neg')+'">'+(g>=0?'+':'')+fe(g,0)+' ('+f(gP,1)+' %)</span></div></div>';
+      '<div class="brow"><span>G/V</span><span class="'+(g>=0?'pos':'neg')+'">'+(g>=0?'+':'')+fe(g,0)+' ('+f(gP,1)+' %)</span></div></div>';
   }).join('');
 
   const snaps=[];
@@ -185,8 +181,7 @@ function renderApp(livePrice){
     return '<tr class="'+(s.isBuy?'buy-tr':'')+'"><td>'+s.lbl+
       (s.isBuy?'<span class="badge">KAUF</span>':'')+
       (s.isCur?'<span class="cur-badge">AKTUELL</span>':'')+
-      '</td><td>'+fe(s.p)+'</td><td>'+f(s.oz,4)+'</td><td>'+fe(s.inv,0)+
-      '</td><td>'+fe(s.val,0)+'</td><td class="'+(g?'pos':'neg')+'">'+(g?'+':'')+fe(s.gain,0)+
+      '</td><td>'+fe(s.p)+'</td><td>'+fe(s.val,0)+
       '</td><td class="'+(g?'pos':'neg')+'">'+(g?'+':'')+f(s.gPct,2)+' %</td></tr>';
   }).join('');
 }
@@ -195,8 +190,6 @@ function applyPrice(){
   const val=parseFloat(document.getElementById('priceInput').value);
   if(!val||val<100){alert('Bitte gueltigen Kurs eingeben.');return;}
   localStorage.setItem('aurum_price',val);
-  localStorage.setItem('aurum_date',new Date().toLocaleString('de-AT'));
-  document.getElementById('lastSet').textContent='Zuletzt gesetzt: '+new Date().toLocaleString('de-AT')+' \u2014 '+fe(val)+'/oz';
   renderApp(val);
 }
 
@@ -207,10 +200,8 @@ if('serviceWorker' in navigator){
 
 // Start
 const saved=localStorage.getItem('aurum_price');
-const savedDate=localStorage.getItem('aurum_date');
 if(saved){
   document.getElementById('priceInput').value=saved;
-  document.getElementById('lastSet').textContent='Zuletzt gesetzt: '+savedDate+' \u2014 \u20AC\u202F'+parseFloat(saved).toLocaleString('de-AT',{minimumFractionDigits:0})+'/oz';
   renderApp(parseFloat(saved));
 }else{
   renderApp(4260);
