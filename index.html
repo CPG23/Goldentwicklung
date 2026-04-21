@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurum – Gold Portfolio</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#C9A84C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aurum">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{--gold:#C9A84C;--gold-l:#E8C97A;--bg:#0D0C0A;--bg2:#1A1814;--bg3:#252220;--text:#E8DFD0;--muted:#8A8070;--green:#5A9A6A;--red:#9A5A5A;--blue:#5B8DB8;--border:rgba(201,168,76,0.15);}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-weight:300;min-height:100vh;}
+
+  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:20px 20px 14px;}
+  .logo{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--gold);}
+  .logo em{font-style:italic;color:var(--gold-l);}
+  .sub{font-size:9px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:2px;}
+
+  .price-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .price-bar label{font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;}
+  .price-input{background:var(--bg3);border:1px solid var(--border);color:var(--gold-l);font-family:'JetBrains Mono',monospace;font-size:15px;padding:6px 12px;width:130px;outline:none;text-align:right;}
+  .price-input:focus{border-color:var(--gold);}
+  .price-unit{font-size:10px;color:var(--muted);}
+  .apply-btn{background:var(--gold);color:var(--bg);border:none;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:7px 16px;cursor:pointer;}
+  .apply-btn:active{background:var(--gold-l);}
+  .google-link{font-size:9px;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,168,76,.3);padding-bottom:1px;white-space:nowrap;margin-left:auto;}
+  .last-set{font-size:9px;color:var(--muted);width:100%;}
+
+  .kpi-grid{display:flex;flex-wrap:wrap;gap:2px;background:var(--border);margin:2px 0;}
+  .kpi{background:var(--bg2);padding:16px 20px;flex:1 1 150px;}
+  .kpi-lbl{font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;}
+  .kpi-val{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;color:var(--gold-l);line-height:1;}
+  .kpi-sub{font-size:10px;color:var(--muted);margin-top:4px;}
+  .pos{color:var(--green)!important;}.neg{color:var(--red)!important;}
+
+  .buy-grid{display:flex;flex-wrap:wrap;gap:2px;background:var(--border);margin:2px 0;}
+  .buy-card{background:var(--bg2);padding:14px 20px;flex:1 1 230px;border-left:2px solid var(--gold);}
+  .buy-ttl{font-size:9px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;}
+  .brow{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+  .brow span:first-child{color:var(--muted);}
+
+  .section-title{font-size:9px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;padding:14px 20px 8px;}
+  .tbl-wrap{background:var(--bg2);overflow-x:auto;margin:0 0 2px;}
+  table{width:100%;border-collapse:collapse;font-size:11px;min-width:480px;}
+  thead th{padding:8px 12px;text-align:right;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);background:var(--bg3);font-weight:400;border-bottom:1px solid var(--border);}
+  thead th:first-child{text-align:left;}
+  tbody tr{border-bottom:1px solid rgba(255,255,255,.03);}
+  tbody tr:hover{background:rgba(201,168,76,.04);}
+  tbody tr.buy-tr{background:rgba(201,168,76,.07);}
+  td{padding:7px 12px;text-align:right;color:var(--muted);}
+  td:first-child{text-align:left;color:var(--text);}
+  .badge{font-size:8px;background:rgba(201,168,76,.2);color:var(--gold);padding:2px 4px;margin-left:4px;}
+  .cur-badge{font-size:8px;background:rgba(90,154,106,.2);color:var(--green);padding:2px 4px;margin-left:4px;}
+
+  footer{text-align:center;font-size:9px;color:var(--muted);padding:14px;border-top:1px solid var(--border);margin-top:2px;line-height:1.8;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Au<em>rum</em></div>
+  <div class="sub">Gold Portfolio &middot; XAU/EUR</div>
+</header>
+
+<div class="price-bar">
+  <label>Aktueller Kurs:</label>
+  <input class="price-input" id="priceInput" type="number" min="100" max="99999" step="1" value="4260">
+  <span class="price-unit">EUR/oz</span>
+  <button class="apply-btn" onclick="applyPrice()">&#10003; Anwenden</button>
+  <a class="google-link" href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">&#128269; Google</a>
+  <div class="last-set" id="lastSet">Zuletzt gesetzt: April 2026 (Startwert)</div>
+</div>
+
+<div class="kpi-grid" id="kpiGrid"></div>
+<div class="buy-grid" id="buyGrid"></div>
+
+<div class="section-title">Jahresuebersicht</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr>
+      <th>Datum</th><th>EUR/oz</th><th>Unzen</th><th>Investiert</th><th>Wert</th><th>G/V EUR</th><th>G/V %</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<footer>
+  Historische Kurse: LBMA-Monatsdurchschnitte &middot; Kurs nachschlagen:
+  <a href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank" style="color:var(--gold)">Google &rarr; &quot;Goldkurs Euro&quot;</a><br>
+  Keine Anlageberatung
+</footer>
+
+<script>
+const BUYS=[
+  {date:"2020-03-18",ppo:1400,inv:10000},
+  {date:"2022-07-13",ppo:1700,inv:5624},
+];
+BUYS.forEach(b=>b.oz=b.inv/b.ppo);
+const TOT_INV=BUYS.reduce((s,b)=>s+b.inv,0);
+const TOT_OZ =BUYS.reduce((s,b)=>s+b.oz,0);
+
+const HIST=[
+  {d:"2020-03",p:1468},{d:"2020-04",p:1547},{d:"2020-05",p:1574},
+  {d:"2020-06",p:1590},{d:"2020-07",p:1677},{d:"2020-08",p:1768},
+  {d:"2020-09",p:1727},{d:"2020-10",p:1670},{d:"2020-11",p:1640},{d:"2020-12",p:1612},
+  {d:"2021-01",p:1573},{d:"2021-02",p:1562},{d:"2021-03",p:1525},
+  {d:"2021-04",p:1541},{d:"2021-05",p:1577},{d:"2021-06",p:1546},
+  {d:"2021-07",p:1543},{d:"2021-08",p:1565},{d:"2021-09",p:1530},
+  {d:"2021-10",p:1561},{d:"2021-11",p:1598},{d:"2021-12",p:1618},
+  {d:"2022-01",p:1720},{d:"2022-02",p:1748},{d:"2022-03",p:1890},
+  {d:"2022-04",p:1830},{d:"2022-05",p:1800},{d:"2022-06",p:1740},
+  {d:"2022-07",p:1672},{d:"2022-08",p:1645},{d:"2022-09",p:1620},
+  {d:"2022-10",p:1660},{d:"2022-11",p:1698},{d:"2022-12",p:1725},
+  {d:"2023-01",p:1790},{d:"2023-02",p:1750},{d:"2023-03",p:1800},
+  {d:"2023-04",p:1860},{d:"2023-05",p:1830},{d:"2023-06",p:1790},
+  {d:"2023-07",p:1820},{d:"2023-08",p:1795},{d:"2023-09",p:1770},
+  {d:"2023-10",p:1840},{d:"2023-11",p:1880},{d:"2023-12",p:1940},
+  {d:"2024-01",p:1955},{d:"2024-02",p:2010},{d:"2024-03",p:2130},
+  {d:"2024-04",p:2215},{d:"2024-05",p:2230},{d:"2024-06",p:2180},
+  {d:"2024-07",p:2250},{d:"2024-08",p:2285},{d:"2024-09",p:2320},
+  {d:"2024-10",p:2390},{d:"2024-11",p:2530},{d:"2024-12",p:2560},
+  {d:"2025-01",p:2610},{d:"2025-02",p:2690},{d:"2025-03",p:2850},
+  {d:"2025-04",p:2920},{d:"2025-05",p:2980},{d:"2025-06",p:3020},
+  {d:"2025-07",p:3060},{d:"2025-08",p:3100},{d:"2025-09",p:3080},
+  {d:"2025-10",p:3120},{d:"2025-11",p:3200},{d:"2025-12",p:3280},
+  {d:"2026-01",p:3380},{d:"2026-02",p:3500},{d:"2026-03",p:3650},
+];
+
+const f =(n,d=2)=>n.toLocaleString('de-AT',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fe=(n,d=2)=>'\u20AC\u202F'+f(n,d);
+const ym=s=>s.slice(0,7);
+
+function renderApp(livePrice){
+  const curYM=new Date().toISOString().slice(0,7);
+  const months=HIST.filter(h=>h.d<curYM).map(h=>({...h}));
+  months.push({d:curYM,p:livePrice,isCur:true});
+
+  const SER=months.map(({d,p,isCur})=>{
+    const oz =BUYS.filter(b=>ym(b.date)<=d).reduce((s,b)=>s+b.oz,0);
+    const inv=BUYS.filter(b=>ym(b.date)<=d).reduce((s,b)=>s+b.inv,0);
+    if(!oz)return null;
+    const val=oz*p,gain=val-inv;
+    return{d,p,oz,inv,val,gain,gPct:gain/inv*100,isCur:!!isCur};
+  }).filter(Boolean);
+  const L=SER[SER.length-1];
+
+  document.getElementById('kpiGrid').innerHTML=[
+    {lbl:'Portfoliowert',    v:fe(L.val,0),  s:new Date().toLocaleDateString('de-AT')},
+    {lbl:'Investiert',       v:fe(TOT_INV,0),s:f(TOT_OZ,4)+' Unzen',col:'var(--blue)'},
+    {lbl:'Gewinn / Verlust', v:(L.gain>=0?'+':'')+fe(L.gain,0),s:(L.gPct>=0?'+':'')+f(L.gPct,2)+' %',cls:L.gain>=0?'pos':'neg'},
+    {lbl:'Goldkurs',         v:fe(livePrice),s:'EUR pro Unze'},
+  ].map(k=>'<div class="kpi"><div class="kpi-lbl">'+k.lbl+'</div><div class="kpi-val '+(k.cls||'')+'" style="'+(k.col?'color:'+k.col:'')+'">'+k.v+'</div><div class="kpi-sub '+(k.cls||'')+'">'+k.s+'</div></div>').join('');
+
+  document.getElementById('buyGrid').innerHTML=BUYS.map((b,i)=>{
+    const val=b.oz*livePrice,g=val-b.inv,gP=g/b.inv*100;
+    return '<div class="buy-card"><div class="buy-ttl">Kauf '+(i+1)+' \u00B7 '+b.date+'</div>'+
+      '<div class="brow"><span>Kaufkurs</span><span>'+fe(b.ppo)+'/oz</span></div>'+
+      '<div class="brow"><span>Investiert</span><span>'+fe(b.inv,0)+'</span></div>'+
+      '<div class="brow"><span>Unzen</span><span>'+f(b.oz,4)+' oz</span></div>'+
+      '<div class="brow"><span>Aktueller Wert</span><span>'+fe(val,0)+'</span></div>'+
+      '<div class="brow"><span>Gewinn / Verlust</span><span class="'+(g>=0?'pos':'neg')+'">'+(g>=0?'+':'')+fe(g,0)+' ('+f(gP,1)+' %)</span></div></div>';
+  }).join('');
+
+  const snaps=[];
+  [...new Set(SER.map(s=>s.d.slice(0,4)))].forEach(y=>{
+    const inY=SER.filter(s=>s.d.startsWith(y));
+    const s=inY[inY.length-1];
+    if(s)snaps.push({...s,lbl:y===new Date().getFullYear().toString()?y+' (aktuell)':y});
+  });
+  BUYS.forEach(b=>{
+    const s=SER.find(r=>r.d>=ym(b.date));
+    if(s&&!snaps.find(r=>r.d===s.d))snaps.push({...s,lbl:b.date,isBuy:true});
+  });
+  snaps.sort((a,b)=>a.d.localeCompare(b.d));
+  document.getElementById('tbody').innerHTML=snaps.map(s=>{
+    const g=s.gain>=0;
+    return '<tr class="'+(s.isBuy?'buy-tr':'')+'"><td>'+s.lbl+
+      (s.isBuy?'<span class="badge">KAUF</span>':'')+
+      (s.isCur?'<span class="cur-badge">AKTUELL</span>':'')+
+      '</td><td>'+fe(s.p)+'</td><td>'+f(s.oz,4)+'</td><td>'+fe(s.inv,0)+
+      '</td><td>'+fe(s.val,0)+'</td><td class="'+(g?'pos':'neg')+'">'+(g?'+':'')+fe(s.gain,0)+
+      '</td><td class="'+(g?'pos':'neg')+'">'+(g?'+':'')+f(s.gPct,2)+' %</td></tr>';
+  }).join('');
+}
+
+function applyPrice(){
+  const val=parseFloat(document.getElementById('priceInput').value);
+  if(!val||val<100){alert('Bitte gueltigen Kurs eingeben.');return;}
+  localStorage.setItem('aurum_price',val);
+  localStorage.setItem('aurum_date',new Date().toLocaleString('de-AT'));
+  document.getElementById('lastSet').textContent='Zuletzt gesetzt: '+new Date().toLocaleString('de-AT')+' \u2014 '+fe(val)+'/oz';
+  renderApp(val);
+}
+
+// Service Worker registrieren
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+// Start
+const saved=localStorage.getItem('aurum_price');
+const savedDate=localStorage.getItem('aurum_date');
+if(saved){
+  document.getElementById('priceInput').value=saved;
+  document.getElementById('lastSet').textContent='Zuletzt gesetzt: '+savedDate+' \u2014 \u20AC\u202F'+parseFloat(saved).toLocaleString('de-AT',{minimumFractionDigits:0})+'/oz';
+  renderApp(parseFloat(saved));
+}else{
+  renderApp(4260);
+}
+</script>
+</body>
+</html>
