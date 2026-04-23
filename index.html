@@ -209,35 +209,64 @@ function setStatus(cls,msg){
   el.textContent=msg;
 }
 
+// Quelle 1: EZB SDMX API – offizieller Tagesschlusskurs XAU/EUR
+async function tryECB(){
+  const res=await fetch('https://data-api.ecb.europa.eu/service/data/EXR/D.XAU.EUR.SP00.A?lastNObservations=1&format=jsondata',
+    {headers:{Accept:'application/json'}});
+  if(!res.ok) throw new Error('ECB '+res.status);
+  const d=await res.json();
+  const ds=d.dataSets[0];
+  const sKey=Object.keys(ds.series)[0];
+  const oKey=Object.keys(ds.series[sKey].observations)[0];
+  let v=ds.series[sKey].observations[oKey][0];
+  // EZB drückt XAU/EUR als oz pro EUR aus → Kehrwert ergibt EUR/oz
+  if(v>0&&v<10) v=1/v;
+  if(v<500||v>99999) throw new Error('ECB-Wert außerhalb Bereich: '+v);
+  return{price:v,source:'EZB (Tagesschlusskurs)'};
+}
+
+// Quelle 2: freegoldapi.com (USD) + frankfurter.app (EUR)
+async function tryFreeGoldAPI(){
+  const [gRes,fRes]=await Promise.all([
+    fetch('https://freegoldapi.com/data/latest.json'),
+    fetch('https://api.frankfurter.app/latest?from=USD&to=EUR')
+  ]);
+  if(!gRes.ok||!fRes.ok) throw new Error('FreeGoldAPI '+gRes.status);
+  const gData=await gRes.json();
+  const fx=await fRes.json();
+  const latest=Array.isArray(gData)?gData[gData.length-1]:gData;
+  const goldUSD=latest?.price??latest?.gold??latest?.XAU;
+  const eurRate=fx?.rates?.EUR;
+  if(!goldUSD||!eurRate) throw new Error('Unbekanntes Format');
+  const v=goldUSD*eurRate;
+  if(v<500||v>99999) throw new Error('Wert außerhalb Bereich: '+v);
+  return{price:v,source:'freegoldapi.com + ECB-Kurs'};
+}
+
 async function autoFetch(){
   const btn=document.getElementById('fetchBtn');
   btn.disabled=true;
   btn.textContent='…';
   setStatus('','Kurs wird abgerufen …');
-  try{
-    const [mRes,fRes]=await Promise.all([
-      fetch('https://metals.live/api/v1/spot'),
-      fetch('https://api.frankfurter.app/latest?from=USD&to=EUR')
-    ]);
-    if(!mRes.ok||!fRes.ok) throw new Error('API-Fehler '+mRes.status);
-    const metals=await mRes.json();
-    const fx=await fRes.json();
-    const xauObj=Array.isArray(metals)?metals.find(m=>m.XAU!=null):metals;
-    const goldUSD=xauObj?.XAU;
-    const eurRate=fx?.rates?.EUR;
-    if(!goldUSD||!eurRate) throw new Error('Unbekanntes Antwortformat');
-    const goldEUR=Math.round(goldUSD*eurRate);
-    document.getElementById('priceInput').value=goldEUR;
-    localStorage.setItem('aurum_price',goldEUR);
-    localStorage.setItem('aurum_auto',new Date().toLocaleString('de-AT'));
-    renderApp(goldEUR);
-    setStatus('ok','✓ Auto-Kurs: '+new Date().toLocaleTimeString('de-AT')+' — Quelle: metals.live + ECB');
-  }catch(e){
-    setStatus('err','✗ Abruf fehlgeschlagen – bitte manuell eingeben ('+e.message+')');
-  }finally{
-    btn.disabled=false;
-    btn.textContent='↻';
+  const sources=[tryECB,tryFreeGoldAPI];
+  let lastErr='';
+  for(const src of sources){
+    try{
+      const{price,source}=await src();
+      const goldEUR=Math.round(price);
+      document.getElementById('priceInput').value=goldEUR;
+      localStorage.setItem('aurum_price',goldEUR);
+      localStorage.setItem('aurum_auto',new Date().toLocaleString('de-AT'));
+      renderApp(goldEUR);
+      setStatus('ok','✓ '+new Date().toLocaleTimeString('de-AT')+' — '+source);
+      btn.disabled=false;
+      btn.textContent='↻';
+      return;
+    }catch(e){lastErr=e.message;}
   }
+  setStatus('err','✗ Abruf fehlgeschlagen – bitte manuell eingeben ('+lastErr+')');
+  btn.disabled=false;
+  btn.textContent='↻';
 }
 
 // Service Worker registrieren
