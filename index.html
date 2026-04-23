@@ -31,6 +31,12 @@
   .price-unit{font-size:10px;color:var(--muted);}
   .apply-btn{background:var(--gold);color:var(--bg);border:none;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:7px 16px;cursor:pointer;}
   .apply-btn:active{background:var(--gold-l);}
+  .fetch-btn{background:transparent;border:1px solid var(--border);color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:13px;padding:5px 10px;cursor:pointer;line-height:1;}
+  .fetch-btn:hover{border-color:var(--gold);}
+  .fetch-btn:disabled{opacity:.4;cursor:default;}
+  .fetch-status{font-size:9px;color:var(--muted);width:100%;}
+  .fetch-status.ok{color:var(--green);}
+  .fetch-status.err{color:var(--red);}
   .google-link{font-size:9px;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,168,76,.3);padding-bottom:1px;white-space:nowrap;margin-left:auto;}
 
   .kpi-grid{display:flex;flex-wrap:wrap;gap:2px;background:var(--border);margin:2px 0;}
@@ -70,11 +76,13 @@
 </header>
 
 <div class="price-bar">
-  <label>Aktueller Kurs:</label>
+  <label>Goldkurs:</label>
   <input class="price-input" id="priceInput" type="number" min="100" max="99999" step="1" value="4260">
   <span class="price-unit">EUR/oz</span>
-  <button class="apply-btn" onclick="applyPrice()">&#10003; Anwenden</button>
+  <button class="fetch-btn" id="fetchBtn" onclick="autoFetch()" title="Kurs automatisch abrufen">&#8635;</button>
+  <button class="apply-btn" onclick="applyPrice()">&#10003; Manuell</button>
   <a class="google-link" href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">&#128269; Google</a>
+  <div class="fetch-status" id="fetchStatus"></div>
 </div>
 
 <div class="kpi-grid" id="kpiGrid"></div>
@@ -190,7 +198,46 @@ function applyPrice(){
   const val=parseFloat(document.getElementById('priceInput').value);
   if(!val||val<100){alert('Bitte gueltigen Kurs eingeben.');return;}
   localStorage.setItem('aurum_price',val);
+  localStorage.removeItem('aurum_auto');
+  setStatus('','');
   renderApp(val);
+}
+
+function setStatus(cls,msg){
+  const el=document.getElementById('fetchStatus');
+  el.className='fetch-status'+(cls?' '+cls:'');
+  el.textContent=msg;
+}
+
+async function autoFetch(){
+  const btn=document.getElementById('fetchBtn');
+  btn.disabled=true;
+  btn.textContent='…';
+  setStatus('','Kurs wird abgerufen …');
+  try{
+    const [mRes,fRes]=await Promise.all([
+      fetch('https://metals.live/api/v1/spot'),
+      fetch('https://api.frankfurter.app/latest?from=USD&to=EUR')
+    ]);
+    if(!mRes.ok||!fRes.ok) throw new Error('API-Fehler '+mRes.status);
+    const metals=await mRes.json();
+    const fx=await fRes.json();
+    const xauObj=Array.isArray(metals)?metals.find(m=>m.XAU!=null):metals;
+    const goldUSD=xauObj?.XAU;
+    const eurRate=fx?.rates?.EUR;
+    if(!goldUSD||!eurRate) throw new Error('Unbekanntes Antwortformat');
+    const goldEUR=Math.round(goldUSD*eurRate);
+    document.getElementById('priceInput').value=goldEUR;
+    localStorage.setItem('aurum_price',goldEUR);
+    localStorage.setItem('aurum_auto',new Date().toLocaleString('de-AT'));
+    renderApp(goldEUR);
+    setStatus('ok','✓ Auto-Kurs: '+new Date().toLocaleTimeString('de-AT')+' — Quelle: metals.live + ECB');
+  }catch(e){
+    setStatus('err','✗ Abruf fehlgeschlagen – bitte manuell eingeben ('+e.message+')');
+  }finally{
+    btn.disabled=false;
+    btn.textContent='↻';
+  }
 }
 
 // Service Worker registrieren
@@ -198,14 +245,17 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 
-// Start
+// Start: gespeicherten Kurs sofort zeigen, dann aktuellen Kurs nachladen
 const saved=localStorage.getItem('aurum_price');
+const savedAuto=localStorage.getItem('aurum_auto');
 if(saved){
   document.getElementById('priceInput').value=saved;
   renderApp(parseFloat(saved));
+  if(savedAuto) setStatus('ok','✓ Letzter Auto-Kurs: '+savedAuto+' — Quelle: metals.live + ECB');
 }else{
   renderApp(4260);
 }
+autoFetch();
 </script>
 </body>
 </html>
