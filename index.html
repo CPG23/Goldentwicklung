@@ -281,9 +281,65 @@ footer {
 }
 footer a { color: var(--gold); opacity: .6; text-decoration: none; }
 footer a:hover { opacity: 1; }
+
+/* ── Install ── */
+.install-bar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border-s);
+}
+.install-bar .msg { font-size: 11px; color: var(--muted); flex: 1; }
+.btn-install {
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-install:active { background: var(--gold-l); }
+.install-dismiss {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 2px;
+}
+.install-dismiss:hover { color: var(--text); }
+.ios-hint {
+  display: none;
+  padding: 11px 24px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.ios-hint strong { color: var(--gold-l); font-weight: 400; }
 </style>
 </head>
 <body>
+
+<!-- Install-Banner (Chrome/Android/Desktop) -->
+<div class="install-bar" id="installBar">
+  <span class="msg">Als App installieren — funktioniert auch offline</span>
+  <button class="btn-install" onclick="installApp()">&#8659; Installieren</button>
+  <button class="install-dismiss" onclick="document.getElementById('installBar').style.display='none'" title="Schließen">&times;</button>
+</div>
+
+<!-- iOS-Hinweis (Safari kennt kein beforeinstallprompt) -->
+<div class="ios-hint" id="iosHint">
+  <strong>App speichern:</strong> Teilen-Symbol &#x2197; &rarr; <strong>Zum Home-Bildschirm</strong>
+</div>
 
 <header>
   <div class="logo">Au<em>rum</em></div>
@@ -639,6 +695,36 @@ window.addEventListener('resize', () => {
     if (p) drawChart(parseFloat(p));
   }, 150);
 });
+
+// ── PWA Install ─────────────────────────────────────────────────────────
+let installPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installPrompt = e;
+  document.getElementById('installBar').style.display = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  installPrompt = null;
+  document.getElementById('installBar').style.display = 'none';
+});
+
+async function installApp() {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  const { outcome } = await installPrompt.userChoice;
+  installPrompt = null;
+  document.getElementById('installBar').style.display = 'none';
+}
+
+// iOS Safari: kein beforeinstallprompt – Hinweis manuell zeigen
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.navigator.standalone === true ||
+  window.matchMedia('(display-mode: standalone)').matches;
+if (isIOS && !isStandalone) {
+  document.getElementById('iosHint').style.display = 'block';
+}
 
 // ── Service Worker ──────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
