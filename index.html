@@ -4,116 +4,344 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aurum – Gold Portfolio</title>
-
-<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#C9A84C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Aurum">
 <link rel="apple-touch-icon" href="icon-192.png">
-
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  :root{--gold:#C9A84C;--gold-l:#E8C97A;--bg:#0D0C0A;--bg2:#1A1814;--bg3:#252220;--text:#E8DFD0;--muted:#8A8070;--green:#5A9A6A;--red:#9A5A5A;--blue:#5B8DB8;--border:rgba(201,168,76,0.15);}
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-weight:300;min-height:100vh;}
+:root {
+  --gold:   #C9A84C;
+  --gold-l: #E8C97A;
+  --gold-d: #7A6030;
+  --bg:     #0D0C0A;
+  --bg2:    #131110;
+  --bg3:    #1C1916;
+  --bg4:    #242018;
+  --text:   #E8DFD0;
+  --muted:  #8A8070;
+  --dim:    #504840;
+  --green:  #5A9A6A;
+  --red:    #9A5A5A;
+  --border: rgba(201,168,76,.12);
+  --border-s: rgba(201,168,76,.28);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 300;
+  min-height: 100vh;
+  max-width: 860px;
+  margin: 0 auto;
+}
 
-  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:20px 20px 14px;}
-  .logo{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--gold);}
-  .logo em{font-style:italic;color:var(--gold-l);}
-  .sub{font-size:9px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:2px;}
+/* ── Header ── */
+header {
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.9rem;
+  font-weight: 300;
+  color: var(--gold);
+  letter-spacing: .02em;
+}
+.logo em { font-style: italic; color: var(--gold-l); }
+.tagline {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
 
-  .price-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .price-bar label{font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;}
-  .price-input{background:var(--bg3);border:1px solid var(--border);color:var(--gold-l);font-family:'JetBrains Mono',monospace;font-size:15px;padding:6px 12px;width:130px;outline:none;text-align:right;}
-  .price-input:focus{border-color:var(--gold);}
-  .price-unit{font-size:10px;color:var(--muted);}
-  .apply-btn{background:var(--gold);color:var(--bg);border:none;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:7px 16px;cursor:pointer;}
-  .apply-btn:active{background:var(--gold-l);}
-  .fetch-btn{background:transparent;border:1px solid var(--border);color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:13px;padding:5px 10px;cursor:pointer;line-height:1;}
-  .fetch-btn:hover{border-color:var(--gold);}
-  .fetch-btn:disabled{opacity:.4;cursor:default;}
-  .fetch-status{font-size:9px;color:var(--muted);width:100%;}
-  .fetch-status.ok{color:var(--green);}
-  .fetch-status.err{color:var(--red);}
-  .google-link{font-size:9px;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,168,76,.3);padding-bottom:1px;white-space:nowrap;margin-left:auto;}
+/* ── Hero ── */
+.hero {
+  padding: 28px 24px 20px;
+}
+.hero-lbl {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.hero-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.6rem, 9vw, 4.2rem);
+  font-weight: 300;
+  color: var(--gold-l);
+  line-height: 1;
+  letter-spacing: -.01em;
+}
+.hero-gain {
+  font-size: 13px;
+  margin-top: 7px;
+  letter-spacing: .02em;
+}
+.hero-stats {
+  display: flex;
+  gap: 28px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+.hero-stat .lbl {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.hero-stat .val { font-size: 12px; color: var(--text); }
+.pos { color: var(--green) !important; }
+.neg { color: var(--red)   !important; }
 
-  .kpi-grid{display:flex;flex-wrap:wrap;gap:2px;background:var(--border);margin:2px 0;}
-  .kpi{background:var(--bg2);padding:16px 20px;flex:1 1 150px;}
-  .kpi-lbl{font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;}
-  .kpi-val{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;color:var(--gold-l);line-height:1;}
-  .kpi-sub{font-size:10px;color:var(--muted);margin-top:4px;}
-  .pos{color:var(--green)!important;}.neg{color:var(--red)!important;}
+/* ── Chart ── */
+.chart-section {
+  padding: 0 24px 4px;
+}
+.chart-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.chart-ttl {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.chart-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 9px;
+  color: var(--muted);
+}
+.dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+#chart {
+  width: 100%;
+  height: 200px;
+  display: block;
+  overflow: visible;
+  cursor: crosshair;
+}
+.tooltip {
+  position: absolute;
+  background: var(--bg3);
+  border: 1px solid var(--border-s);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 6px 10px;
+  pointer-events: none;
+  display: none;
+  white-space: nowrap;
+  z-index: 10;
+}
 
-  .buy-grid{display:flex;flex-wrap:wrap;gap:2px;background:var(--border);margin:2px 0;}
-  .buy-card{background:var(--bg2);padding:14px 20px;flex:1 1 230px;border-left:2px solid var(--gold);}
-  .buy-ttl{font-size:9px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;}
-  .brow{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
-  .brow span:first-child{color:var(--muted);}
+/* ── Price bar ── */
+.price-section {
+  margin-top: 18px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.price-lbl {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.price-input {
+  background: var(--bg3);
+  border: 1px solid var(--border-s);
+  color: var(--gold-l);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  padding: 7px 12px;
+  width: 140px;
+  outline: none;
+  text-align: right;
+  -moz-appearance: textfield;
+}
+.price-input::-webkit-outer-spin-button,
+.price-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.price-input:focus { border-color: var(--gold); }
+.unit { font-size: 10px; color: var(--dim); }
 
-  .section-title{font-size:9px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;padding:14px 20px 8px;}
-  .tbl-wrap{background:var(--bg2);overflow-x:auto;margin:0 0 2px;}
-  table{width:100%;border-collapse:collapse;font-size:11px;min-width:280px;}
-  thead th{padding:8px 12px;text-align:right;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);background:var(--bg3);font-weight:400;border-bottom:1px solid var(--border);}
-  thead th:first-child{text-align:left;}
-  tbody tr{border-bottom:1px solid rgba(255,255,255,.03);}
-  tbody tr:hover{background:rgba(201,168,76,.04);}
-  tbody tr.buy-tr{background:rgba(201,168,76,.07);}
-  td{padding:7px 12px;text-align:right;color:var(--muted);}
-  td:first-child{text-align:left;color:var(--text);}
-  .badge{font-size:8px;background:rgba(201,168,76,.2);color:var(--gold);padding:2px 4px;margin-left:4px;}
-  .cur-badge{font-size:8px;background:rgba(90,154,106,.2);color:var(--green);padding:2px 4px;margin-left:4px;}
+.btn-fetch {
+  background: transparent;
+  border: 1px solid var(--border-s);
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  padding: 6px 11px;
+  cursor: pointer;
+  line-height: 1;
+  transition: border-color .15s;
+}
+.btn-fetch:hover { border-color: var(--gold); }
+.btn-fetch:disabled { opacity: .35; cursor: default; }
+.btn-manual {
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.btn-manual:active { background: var(--gold-l); }
+.google-link {
+  font-size: 9px;
+  color: var(--gold);
+  text-decoration: none;
+  opacity: .6;
+  white-space: nowrap;
+  margin-left: auto;
+}
+.google-link:hover { opacity: 1; }
+.fetch-status {
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 7px;
+}
+.fetch-status.ok  { color: var(--green); }
+.fetch-status.err { color: var(--red); }
 
-  footer{text-align:center;font-size:9px;color:var(--muted);padding:14px;border-top:1px solid var(--border);margin-top:2px;line-height:1.8;}
+/* ── Positions ── */
+.section-lbl {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  padding: 20px 24px 10px;
+}
+.buys {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2px;
+  background: var(--border);
+}
+.buy-card {
+  background: var(--bg2);
+  padding: 16px 24px;
+  border-left: 2px solid var(--gold-d);
+  transition: border-color .15s;
+}
+.buy-card:hover { border-left-color: var(--gold); }
+.buy-ttl {
+  font-size: 9px;
+  color: var(--gold);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 11px;
+}
+.brow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+.brow .k { color: var(--muted); }
+
+/* ── Footer ── */
+footer {
+  text-align: center;
+  font-size: 9px;
+  color: var(--dim);
+  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+  margin-top: 16px;
+  line-height: 2;
+}
+footer a { color: var(--gold); opacity: .6; text-decoration: none; }
+footer a:hover { opacity: 1; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">Au<em>rum</em></div>
-  <div class="sub">Gold Portfolio &middot; XAU/EUR</div>
+  <div class="tagline">Gold Portfolio · XAU/EUR</div>
 </header>
 
-<div class="price-bar">
-  <label>Goldkurs:</label>
-  <input class="price-input" id="priceInput" type="number" min="100" max="99999" step="1" value="4260">
-  <span class="price-unit">EUR/oz</span>
-  <button class="fetch-btn" id="fetchBtn" onclick="autoFetch()" title="Kurs automatisch abrufen">&#8635;</button>
-  <button class="apply-btn" onclick="applyPrice()">&#10003; Manuell</button>
-  <a class="google-link" href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">&#128269; Google</a>
+<div class="hero">
+  <div class="hero-lbl">Portfoliowert</div>
+  <div class="hero-val" id="heroVal">—</div>
+  <div class="hero-gain" id="heroGain"></div>
+  <div class="hero-stats" id="heroStats"></div>
+</div>
+
+<div class="chart-section">
+  <div class="chart-top">
+    <span class="chart-ttl">Kursentwicklung XAU/EUR</span>
+    <div class="chart-legend">
+      <span><span class="dot" style="background:var(--gold)"></span>Kurs</span>
+      <span><span class="dot" style="background:var(--gold-d);border:1px solid var(--gold)"></span>Kauf</span>
+    </div>
+  </div>
+  <div style="position:relative">
+    <svg id="chart"></svg>
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+</div>
+
+<div class="price-section">
+  <div class="price-row">
+    <span class="price-lbl">Goldkurs</span>
+    <input class="price-input" id="priceInput" type="number" min="100" max="99999" step="1" value="4260">
+    <span class="unit">EUR/oz</span>
+    <button class="btn-fetch" id="fetchBtn" onclick="autoFetch()" title="Automatisch abrufen">↻</button>
+    <button class="btn-manual" onclick="applyPrice()">✓ Manuell</button>
+    <a class="google-link" href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">↗ Google</a>
+  </div>
   <div class="fetch-status" id="fetchStatus"></div>
 </div>
 
-<div class="kpi-grid" id="kpiGrid"></div>
-<div class="buy-grid" id="buyGrid"></div>
-
-<div class="section-title">Jahresübersicht</div>
-<div class="tbl-wrap">
-  <table>
-    <thead><tr>
-      <th>Datum</th><th>EUR/oz</th><th>Wert</th><th>G/V %</th>
-    </tr></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
+<div class="section-lbl">Positionen</div>
+<div class="buys" id="buyGrid"></div>
 
 <footer>
-  Historische Kurse: LBMA-Monatsdurchschnitte &middot; Kurs nachschlagen:
-  <a href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank" style="color:var(--gold)">Google &rarr; &quot;Goldkurs Euro&quot;</a><br>
-  Keine Anlageberatung
+  Historische Kurse: LBMA-Monatsdurchschnitte &middot; Live-Kurs: Coinbase<br>
+  <a href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">Kurs nachschlagen ↗</a>
+  &middot; Keine Anlageberatung
 </footer>
 
 <script>
-const BUYS=[
-  {date:"2020-03-18",ppo:1400,inv:10000},
-  {date:"2022-07-13",ppo:1700,inv:5624},
+const BUYS = [
+  { date:"2020-03-18", ppo:1400, inv:10000 },
+  { date:"2022-07-13", ppo:1700, inv:5624  },
 ];
-BUYS.forEach(b=>b.oz=b.inv/b.ppo);
-const TOT_INV=BUYS.reduce((s,b)=>s+b.inv,0);
-const TOT_OZ =BUYS.reduce((s,b)=>s+b.oz,0);
+BUYS.forEach(b => b.oz = b.inv / b.ppo);
+const TOT_INV = BUYS.reduce((s,b) => s + b.inv, 0);
+const TOT_OZ  = BUYS.reduce((s,b) => s + b.oz,  0);
 
-const HIST=[
+const HIST = [
   {d:"2020-03",p:1468},{d:"2020-04",p:1547},{d:"2020-05",p:1574},
   {d:"2020-06",p:1590},{d:"2020-07",p:1677},{d:"2020-08",p:1768},
   {d:"2020-09",p:1727},{d:"2020-10",p:1670},{d:"2020-11",p:1640},{d:"2020-12",p:1612},
@@ -140,159 +368,285 @@ const HIST=[
   {d:"2026-01",p:3380},{d:"2026-02",p:3500},{d:"2026-03",p:3650},
 ];
 
-const f =(n,d=2)=>n.toLocaleString('de-AT',{minimumFractionDigits:d,maximumFractionDigits:d});
-const fe=(n,d=2)=>'\u20AC\u202F'+f(n,d);
-const ym=s=>s.slice(0,7);
+const f  = (n, d=2) => n.toLocaleString('de-AT',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fe = (n, d=2) => '€ ' + f(n, d);
+const ym = s => s.slice(0,7);
 
-function renderApp(livePrice){
-  const curYM=new Date().toISOString().slice(0,7);
-  const months=HIST.filter(h=>h.d<curYM).map(h=>({...h}));
-  months.push({d:curYM,p:livePrice,isCur:true});
+// ── Price history ──────────────────────────────────────────────────────
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem('aurum_history') || '[]'); }
+  catch { return []; }
+}
+function saveHistory(h) {
+  localStorage.setItem('aurum_history', JSON.stringify(h.slice(-730)));
+}
+function recordPrice(price) {
+  const h   = loadHistory();
+  const day = new Date().toISOString().slice(0,10);
+  const idx = h.findIndex(e => e.d === day);
+  if (idx >= 0) h[idx].p = price; else h.push({d:day, p:price});
+  saveHistory(h);
+}
 
-  const SER=months.map(({d,p,isCur})=>{
-    const oz =BUYS.filter(b=>ym(b.date)<=d).reduce((s,b)=>s+b.oz,0);
-    const inv=BUYS.filter(b=>ym(b.date)<=d).reduce((s,b)=>s+b.inv,0);
-    if(!oz)return null;
-    const val=oz*p,gain=val-inv;
-    return{d,p,oz,inv,val,gain,gPct:gain/inv*100,isCur:!!isCur};
-  }).filter(Boolean);
-  const L=SER[SER.length-1];
+// ── Chart ──────────────────────────────────────────────────────────────
+let chartPts = [];
 
-  document.getElementById('kpiGrid').innerHTML=[
-    {lbl:'Portfoliowert',    v:fe(L.val,0),  s:new Date().toLocaleDateString('de-AT')},
-    {lbl:'Investiert',       v:fe(TOT_INV,0),s:f(TOT_OZ,4)+' Unzen',col:'var(--blue)'},
-    {lbl:'Gewinn / Verlust', v:(L.gain>=0?'+':'')+fe(L.gain,0),s:(L.gPct>=0?'+':'')+f(L.gPct,2)+' %',cls:L.gain>=0?'pos':'neg'},
-    {lbl:'Goldkurs',         v:fe(livePrice),s:'EUR pro Unze'},
-  ].map(k=>'<div class="kpi"><div class="kpi-lbl">'+k.lbl+'</div><div class="kpi-val '+(k.cls||'')+'" style="'+(k.col?'color:'+k.col:'')+'">'+k.v+'</div><div class="kpi-sub '+(k.cls||'')+'">'+k.s+'</div></div>').join('');
+function buildChartData(livePrice) {
+  const curYM = new Date().toISOString().slice(0,7);
+  // Start from HIST, override with saved personal history
+  const map = new Map(HIST.map(h => [h.d, h.p]));
+  loadHistory().forEach(e => { const m = e.d.slice(0,7); if (map.has(m)) map.set(m, e.p); });
 
-  document.getElementById('buyGrid').innerHTML=BUYS.map((b,i)=>{
-    const val=b.oz*livePrice,g=val-b.inv,gP=g/b.inv*100;
-    return '<div class="buy-card"><div class="buy-ttl">Kauf '+(i+1)+' \u00B7 '+b.date+'</div>'+
-      '<div class="brow"><span>Investiert</span><span>'+fe(b.inv,0)+'</span></div>'+
-      '<div class="brow"><span>Aktueller Wert</span><span>'+fe(val,0)+'</span></div>'+
-      '<div class="brow"><span>G/V</span><span class="'+(g>=0?'pos':'neg')+'">'+(g>=0?'+':'')+fe(g,0)+' ('+f(gP,1)+' %)</span></div></div>';
-  }).join('');
+  const pts = [];
+  map.forEach((p, d) => { if (d <= curYM) pts.push({d, p}); });
+  pts.sort((a,b) => a.d.localeCompare(b.d));
 
-  const snaps=[];
-  [...new Set(SER.map(s=>s.d.slice(0,4)))].forEach(y=>{
-    const inY=SER.filter(s=>s.d.startsWith(y));
-    const s=inY[inY.length-1];
-    if(s)snaps.push({...s,lbl:y===new Date().getFullYear().toString()?y+' (aktuell)':y});
+  // Ensure current month uses live price
+  if (pts.length && pts[pts.length-1].d === curYM) pts[pts.length-1].p = livePrice;
+  else pts.push({d:curYM, p:livePrice, live:true});
+
+  return pts;
+}
+
+function drawChart(livePrice) {
+  const svg = document.getElementById('chart');
+  const VW  = svg.clientWidth || 800;
+  const VH  = 200;
+  const PAD = {t:18, r:14, b:28, l:8};
+  const W   = VW - PAD.l - PAD.r;
+  const H   = VH - PAD.t - PAD.b;
+
+  svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+  chartPts = buildChartData(livePrice);
+  const prices = chartPts.map(p => p.p);
+  const minP   = Math.min(...prices) * 0.96;
+  const maxP   = Math.max(...prices) * 1.025;
+
+  const xS = i => PAD.l + (i / (chartPts.length - 1)) * W;
+  const yS = v => PAD.t + H - ((v - minP) / (maxP - minP)) * H;
+
+  // Path
+  let line = '', area = '';
+  chartPts.forEach((pt, i) => {
+    const x = xS(i), y = yS(pt.p);
+    line += (i === 0 ? `M${x},${y}` : ` L${x},${y}`);
   });
-  BUYS.forEach(b=>{
-    const s=SER.find(r=>r.d>=ym(b.date));
-    if(s&&!snaps.find(r=>r.d===s.d))snaps.push({...s,lbl:b.date,isBuy:true});
+  area = line + ` L${xS(chartPts.length-1)},${PAD.t+H} L${xS(0)},${PAD.t+H}Z`;
+
+  // Year labels + grid
+  const years = [...new Set(chartPts.map(p => p.d.slice(0,4)))];
+  let yearEls = '';
+  years.forEach(y => {
+    const idx = chartPts.findIndex(p => p.d.startsWith(y));
+    if (idx < 0) return;
+    const x = xS(idx);
+    yearEls += `<line x1="${x}" y1="${PAD.t}" x2="${x}" y2="${PAD.t+H}" stroke="rgba(255,255,255,.04)" stroke-width="1"/>`;
+    yearEls += `<text x="${x+3}" y="${VH-6}" font-size="8" fill="rgba(138,128,112,.55)" font-family="JetBrains Mono,monospace">${y}</text>`;
   });
-  snaps.sort((a,b)=>a.d.localeCompare(b.d));
-  document.getElementById('tbody').innerHTML=snaps.map(s=>{
-    const g=s.gain>=0;
-    return '<tr class="'+(s.isBuy?'buy-tr':'')+'"><td>'+s.lbl+
-      (s.isBuy?'<span class="badge">KAUF</span>':'')+
-      (s.isCur?'<span class="cur-badge">AKTUELL</span>':'')+
-      '</td><td>'+fe(s.p)+'</td><td>'+fe(s.val,0)+
-      '</td><td class="'+(g?'pos':'neg')+'">'+(g?'+':'')+f(s.gPct,2)+' %</td></tr>';
-  }).join('');
-}
 
-function applyPrice(){
-  const val=parseFloat(document.getElementById('priceInput').value);
-  if(!val||val<100){alert('Bitte gueltigen Kurs eingeben.');return;}
-  localStorage.setItem('aurum_price',val);
-  localStorage.removeItem('aurum_auto');
-  setStatus('','');
-  renderApp(val);
-}
-
-function setStatus(cls,msg){
-  const el=document.getElementById('fetchStatus');
-  el.className='fetch-status'+(cls?' '+cls:'');
-  el.textContent=msg;
-}
-
-// Quelle 1: Coinbase – öffentlicher Endpoint, CORS-fähig, kein API-Key
-async function tryCoinbase(){
-  const res=await fetch('https://api.coinbase.com/v2/exchange-rates?currency=XAU');
-  if(!res.ok) throw new Error('Coinbase '+res.status);
-  const d=await res.json();
-  const v=parseFloat(d?.data?.rates?.EUR);
-  if(!v||v<500||v>99999) throw new Error('Coinbase: ungültiger Wert '+v);
-  return{price:v,source:'Coinbase'};
-}
-
-// Quelle 2: EZB SDMX API – offizieller Tagesschlusskurs XAU/EUR
-async function tryECB(){
-  const res=await fetch('https://data-api.ecb.europa.eu/service/data/EXR/D.XAU.EUR.SP00.A?lastNObservations=1&format=jsondata',
-    {headers:{Accept:'application/json'}});
-  if(!res.ok) throw new Error('ECB '+res.status);
-  const d=await res.json();
-  const ds=d.dataSets[0];
-  const sKey=Object.keys(ds.series)[0];
-  const oKey=Object.keys(ds.series[sKey].observations)[0];
-  let v=ds.series[sKey].observations[oKey][0];
-  if(v>0&&v<10) v=1/v;
-  if(v<500||v>99999) throw new Error('ECB: ungültiger Wert '+v);
-  return{price:v,source:'EZB'};
-}
-
-// Quelle 3: freegoldapi.com (USD) + frankfurter.app (EUR)
-async function tryFreeGoldAPI(){
-  const [gRes,fRes]=await Promise.all([
-    fetch('https://freegoldapi.com/data/latest.json'),
-    fetch('https://api.frankfurter.app/latest?from=USD&to=EUR')
-  ]);
-  if(!gRes.ok||!fRes.ok) throw new Error('FreeGoldAPI '+gRes.status);
-  const gData=await gRes.json();
-  const fx=await fRes.json();
-  const latest=Array.isArray(gData)?gData[gData.length-1]:gData;
-  const goldUSD=latest?.price??latest?.gold??latest?.XAU;
-  const eurRate=fx?.rates?.EUR;
-  if(!goldUSD||!eurRate) throw new Error('Unbekanntes Format');
-  const v=goldUSD*eurRate;
-  if(v<500||v>99999) throw new Error('FreeGoldAPI: ungültiger Wert '+v);
-  return{price:v,source:'freegoldapi.com'};
-}
-
-async function autoFetch(){
-  const btn=document.getElementById('fetchBtn');
-  btn.disabled=true;
-  btn.textContent='…';
-  setStatus('','Kurs wird abgerufen …');
-  const sources=[tryCoinbase,tryECB,tryFreeGoldAPI];
-  let lastErr='';
-  for(const src of sources){
-    try{
-      const{price,source}=await src();
-      const goldEUR=Math.round(price);
-      document.getElementById('priceInput').value=goldEUR;
-      localStorage.setItem('aurum_price',goldEUR);
-      localStorage.setItem('aurum_auto',new Date().toLocaleString('de-AT'));
-      renderApp(goldEUR);
-      setStatus('ok','✓ '+new Date().toLocaleTimeString('de-AT')+' — '+source);
-      btn.disabled=false;
-      btn.textContent='↻';
-      return;
-    }catch(e){lastErr=e.message;}
+  // Price grid lines
+  const steps = 4;
+  let gridEls = '';
+  for (let i = 0; i <= steps; i++) {
+    const v = minP + (maxP - minP) * (i / steps);
+    const y = yS(v);
+    gridEls += `<line x1="${PAD.l}" y1="${y}" x2="${VW-PAD.r}" y2="${y}" stroke="rgba(255,255,255,.04)" stroke-width="1"/>`;
+    if (i > 0 && i < steps) gridEls += `<text x="${VW-PAD.r-2}" y="${y-3}" font-size="7" fill="rgba(138,128,112,.45)" font-family="JetBrains Mono,monospace" text-anchor="end">${Math.round(v)}</text>`;
   }
-  setStatus('err','✗ Abruf fehlgeschlagen – bitte manuell eingeben ('+lastErr+')');
-  btn.disabled=false;
-  btn.textContent='↻';
+
+  // Buy markers
+  let buyEls = '';
+  BUYS.forEach(b => {
+    const idx = chartPts.findIndex(p => p.d === ym(b.date));
+    if (idx < 0) return;
+    const x = xS(idx), y = yS(chartPts[idx].p);
+    buyEls += `<line x1="${x}" y1="${PAD.t}" x2="${x}" y2="${PAD.t+H}" stroke="rgba(201,168,76,.2)" stroke-width="1" stroke-dasharray="3,3"/>`;
+    buyEls += `<circle cx="${x}" cy="${y}" r="4" fill="var(--bg)" stroke="var(--gold)" stroke-width="1.5"/>`;
+    buyEls += `<circle cx="${x}" cy="${y}" r="1.5" fill="var(--gold-d)"/>`;
+  });
+
+  // Live dot
+  const lx = xS(chartPts.length-1), ly = yS(livePrice);
+  const liveDot = `
+    <circle cx="${lx}" cy="${ly}" r="5" fill="var(--bg)" stroke="var(--gold-l)" stroke-width="1.5"/>
+    <circle cx="${lx}" cy="${ly}" r="2" fill="var(--gold-l)"/>`;
+
+  // Hover line (initially hidden)
+  const hoverLine = `<line id="hline" x1="0" y1="${PAD.t}" x2="0" y2="${PAD.t+H}" stroke="rgba(201,168,76,.35)" stroke-width="1" display="none"/>`;
+
+  svg.innerHTML = `
+<defs>
+  <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%"   stop-color="#C9A84C" stop-opacity=".22"/>
+    <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+  </linearGradient>
+</defs>
+${gridEls}${yearEls}
+<path d="${area}" fill="url(#ag)"/>
+<path d="${line}" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round"/>
+${buyEls}${liveDot}${hoverLine}`;
 }
 
-// Service Worker registrieren
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+// Chart hover / tooltip
+function setupChartHover() {
+  const svg     = document.getElementById('chart');
+  const tooltip = document.getElementById('tooltip');
+  const wrap    = svg.parentElement;
+
+  svg.addEventListener('mousemove', e => {
+    if (!chartPts.length) return;
+    const rect = svg.getBoundingClientRect();
+    const VW   = svg.clientWidth;
+    const PAD  = {t:18, r:14, b:28, l:8};
+    const W    = VW - PAD.l - PAD.r;
+    const relX = e.clientX - rect.left - PAD.l;
+    const idx  = Math.round((relX / W) * (chartPts.length - 1));
+    const pt   = chartPts[Math.max(0, Math.min(idx, chartPts.length-1))];
+    if (!pt) return;
+
+    const xS = i => PAD.l + (i / (chartPts.length - 1)) * W;
+    const cl = Math.max(0, Math.min(idx, chartPts.length-1));
+    const px = xS(cl);
+    const hl = svg.querySelector('#hline');
+    if (hl) { hl.setAttribute('x1', px); hl.setAttribute('x2', px); hl.setAttribute('display',''); }
+
+    tooltip.style.display  = 'block';
+    tooltip.style.left     = (e.clientX - wrap.getBoundingClientRect().left + 12) + 'px';
+    tooltip.style.top      = (e.clientY - wrap.getBoundingClientRect().top  - 36) + 'px';
+    tooltip.textContent    = pt.d + '  ·  ' + fe(pt.p, 0) + '/oz';
+  });
+  svg.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+    const hl = svg.querySelector('#hline');
+    if (hl) hl.setAttribute('display','none');
+  });
 }
 
-// Start: gespeicherten Kurs sofort zeigen, dann aktuellen Kurs nachladen
-const saved=localStorage.getItem('aurum_price');
-const savedAuto=localStorage.getItem('aurum_auto');
-if(saved){
-  document.getElementById('priceInput').value=saved;
-  renderApp(parseFloat(saved));
-  if(savedAuto) setStatus('ok','✓ Letzter Auto-Kurs: '+savedAuto+' — Quelle: metals.live + ECB');
-}else{
-  renderApp(4260);
+// ── Render ─────────────────────────────────────────────────────────────
+function renderApp(livePrice) {
+  recordPrice(livePrice);
+
+  const val  = TOT_OZ * livePrice;
+  const gain = val - TOT_INV;
+  const gPct = gain / TOT_INV * 100;
+  const cls  = gain >= 0 ? 'pos' : 'neg';
+
+  document.getElementById('heroVal').textContent = fe(val, 0);
+
+  const gEl = document.getElementById('heroGain');
+  gEl.className = 'hero-gain ' + cls;
+  gEl.textContent = (gain >= 0 ? '+' : '') + fe(gain, 0) + '  ·  ' + (gPct >= 0 ? '+' : '') + f(gPct, 1) + ' %';
+
+  document.getElementById('heroStats').innerHTML = [
+    {lbl:'Investiert', val: fe(TOT_INV, 0)},
+    {lbl:'Unzen',      val: f(TOT_OZ, 4) + ' oz'},
+    {lbl:'Kurs',       val: fe(livePrice, 0) + '/oz'},
+  ].map(s => `<div class="hero-stat"><div class="lbl">${s.lbl}</div><div class="val">${s.val}</div></div>`).join('');
+
+  document.getElementById('buyGrid').innerHTML = BUYS.map((b, i) => {
+    const v = b.oz * livePrice, g = v - b.inv, gP = g / b.inv * 100;
+    return `<div class="buy-card">
+      <div class="buy-ttl">Kauf ${i+1} · ${b.date}</div>
+      <div class="brow"><span class="k">Investiert</span><span>${fe(b.inv, 0)}</span></div>
+      <div class="brow"><span class="k">Aktueller Wert</span><span>${fe(v, 0)}</span></div>
+      <div class="brow"><span class="k">G/V</span><span class="${g>=0?'pos':'neg'}">${g>=0?'+':''}${fe(g,0)} (${f(gP,1)} %)</span></div>
+    </div>`;
+  }).join('');
+
+  drawChart(livePrice);
 }
+
+// ── Price controls ──────────────────────────────────────────────────────
+function setStatus(cls, msg) {
+  const el = document.getElementById('fetchStatus');
+  el.className = 'fetch-status' + (cls ? ' ' + cls : '');
+  el.textContent = msg;
+}
+function applyPrice() {
+  const v = parseFloat(document.getElementById('priceInput').value);
+  if (!v || v < 100) { alert('Bitte gültigen Kurs eingeben.'); return; }
+  localStorage.setItem('aurum_price', v);
+  setStatus('', '');
+  renderApp(v);
+}
+
+async function tryCoinbase() {
+  const r = await fetch('https://api.coinbase.com/v2/exchange-rates?currency=XAU');
+  if (!r.ok) throw new Error('Coinbase ' + r.status);
+  const d = await r.json();
+  const v = parseFloat(d?.data?.rates?.EUR);
+  if (!v || v < 500 || v > 99999) throw new Error('Coinbase: ' + v);
+  return {price: v, source: 'Coinbase'};
+}
+async function tryECB() {
+  const r = await fetch(
+    'https://data-api.ecb.europa.eu/service/data/EXR/D.XAU.EUR.SP00.A?lastNObservations=1&format=jsondata',
+    {headers: {Accept: 'application/json'}}
+  );
+  if (!r.ok) throw new Error('ECB ' + r.status);
+  const d = await r.json();
+  const ds = d.dataSets[0];
+  const sk = Object.keys(ds.series)[0];
+  const ok = Object.keys(ds.series[sk].observations)[0];
+  let v = ds.series[sk].observations[ok][0];
+  if (v > 0 && v < 10) v = 1 / v;
+  if (v < 500 || v > 99999) throw new Error('ECB: ' + v);
+  return {price: v, source: 'EZB'};
+}
+async function tryFreeGold() {
+  const [gR, fR] = await Promise.all([
+    fetch('https://freegoldapi.com/data/latest.json'),
+    fetch('https://api.frankfurter.app/latest?from=USD&to=EUR'),
+  ]);
+  if (!gR.ok || !fR.ok) throw new Error('FreeGold ' + gR.status);
+  const gd = await gR.json();
+  const fx = await fR.json();
+  const lat = Array.isArray(gd) ? gd[gd.length-1] : gd;
+  const usd = lat?.price ?? lat?.gold ?? lat?.XAU;
+  const eur = fx?.rates?.EUR;
+  if (!usd || !eur) throw new Error('Format unbekannt');
+  const v = usd * eur;
+  if (v < 500 || v > 99999) throw new Error('FreeGold: ' + v);
+  return {price: v, source: 'freegoldapi.com'};
+}
+
+async function autoFetch() {
+  const btn = document.getElementById('fetchBtn');
+  btn.disabled = true; btn.textContent = '…';
+  setStatus('', 'Kurs wird abgerufen …');
+  for (const src of [tryCoinbase, tryECB, tryFreeGold]) {
+    try {
+      const {price, source} = await src();
+      const p = Math.round(price);
+      document.getElementById('priceInput').value = p;
+      localStorage.setItem('aurum_price', p);
+      renderApp(p);
+      setStatus('ok', '✓ ' + new Date().toLocaleTimeString('de-AT') + ' — ' + source);
+      btn.disabled = false; btn.textContent = '↻';
+      return;
+    } catch (_) {}
+  }
+  setStatus('err', '✗ Abruf fehlgeschlagen – bitte manuell eingeben');
+  btn.disabled = false; btn.textContent = '↻';
+}
+
+// ── Resize chart on window resize ──────────────────────────────────────
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const p = localStorage.getItem('aurum_price');
+    if (p) drawChart(parseFloat(p));
+  }, 150);
+});
+
+// ── Service Worker ──────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+
+// ── Init ────────────────────────────────────────────────────────────────
+const saved = localStorage.getItem('aurum_price');
+renderApp(saved ? parseFloat(saved) : 4260);
+setupChartHover();
 autoFetch();
 </script>
 </body>
