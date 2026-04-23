@@ -209,7 +209,17 @@ function setStatus(cls,msg){
   el.textContent=msg;
 }
 
-// Quelle 1: EZB SDMX API – offizieller Tagesschlusskurs XAU/EUR
+// Quelle 1: Coinbase – öffentlicher Endpoint, CORS-fähig, kein API-Key
+async function tryCoinbase(){
+  const res=await fetch('https://api.coinbase.com/v2/exchange-rates?currency=XAU');
+  if(!res.ok) throw new Error('Coinbase '+res.status);
+  const d=await res.json();
+  const v=parseFloat(d?.data?.rates?.EUR);
+  if(!v||v<500||v>99999) throw new Error('Coinbase: ungültiger Wert '+v);
+  return{price:v,source:'Coinbase'};
+}
+
+// Quelle 2: EZB SDMX API – offizieller Tagesschlusskurs XAU/EUR
 async function tryECB(){
   const res=await fetch('https://data-api.ecb.europa.eu/service/data/EXR/D.XAU.EUR.SP00.A?lastNObservations=1&format=jsondata',
     {headers:{Accept:'application/json'}});
@@ -219,13 +229,12 @@ async function tryECB(){
   const sKey=Object.keys(ds.series)[0];
   const oKey=Object.keys(ds.series[sKey].observations)[0];
   let v=ds.series[sKey].observations[oKey][0];
-  // EZB drückt XAU/EUR als oz pro EUR aus → Kehrwert ergibt EUR/oz
   if(v>0&&v<10) v=1/v;
-  if(v<500||v>99999) throw new Error('ECB-Wert außerhalb Bereich: '+v);
-  return{price:v,source:'EZB (Tagesschlusskurs)'};
+  if(v<500||v>99999) throw new Error('ECB: ungültiger Wert '+v);
+  return{price:v,source:'EZB'};
 }
 
-// Quelle 2: freegoldapi.com (USD) + frankfurter.app (EUR)
+// Quelle 3: freegoldapi.com (USD) + frankfurter.app (EUR)
 async function tryFreeGoldAPI(){
   const [gRes,fRes]=await Promise.all([
     fetch('https://freegoldapi.com/data/latest.json'),
@@ -239,8 +248,8 @@ async function tryFreeGoldAPI(){
   const eurRate=fx?.rates?.EUR;
   if(!goldUSD||!eurRate) throw new Error('Unbekanntes Format');
   const v=goldUSD*eurRate;
-  if(v<500||v>99999) throw new Error('Wert außerhalb Bereich: '+v);
-  return{price:v,source:'freegoldapi.com + ECB-Kurs'};
+  if(v<500||v>99999) throw new Error('FreeGoldAPI: ungültiger Wert '+v);
+  return{price:v,source:'freegoldapi.com'};
 }
 
 async function autoFetch(){
@@ -248,7 +257,7 @@ async function autoFetch(){
   btn.disabled=true;
   btn.textContent='…';
   setStatus('','Kurs wird abgerufen …');
-  const sources=[tryECB,tryFreeGoldAPI];
+  const sources=[tryCoinbase,tryECB,tryFreeGoldAPI];
   let lastErr='';
   for(const src of sources){
     try{
