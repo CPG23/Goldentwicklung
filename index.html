@@ -315,36 +315,113 @@ footer a:hover { opacity: 1; }
   padding: 0 2px;
 }
 .install-dismiss:hover { color: var(--text); }
-.ios-hint {
+
+/* ── Install-Button im Header ── */
+.btn-header-install {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border-s);
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  cursor: pointer;
+  white-space: nowrap;
   display: none;
-  padding: 11px 24px;
-  background: var(--bg3);
-  border-bottom: 1px solid var(--border);
-  font-size: 10px;
-  color: var(--muted);
-  line-height: 1.8;
 }
-.ios-hint strong { color: var(--gold-l); font-weight: 400; }
+.btn-header-install:hover { background: rgba(201,168,76,.08); }
+
+/* ── Install-Modal ── */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--bg3);
+  border: 1px solid var(--border-s);
+  padding: 28px 28px 24px;
+  max-width: 380px;
+  width: 100%;
+}
+.modal-ttl {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--gold-l);
+  margin-bottom: 16px;
+}
+.modal-steps {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 2;
+  margin-bottom: 20px;
+}
+.modal-steps strong { color: var(--text); font-weight: 400; }
+.modal-steps .step {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.modal-steps .num {
+  color: var(--gold);
+  min-width: 16px;
+}
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-modal-install {
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: none;
+}
+.btn-modal-install:active { background: var(--gold-l); }
+.btn-modal-close {
+  background: transparent;
+  border: 1px solid var(--border-s);
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.btn-modal-close:hover { color: var(--text); }
 </style>
 </head>
 <body>
 
-<!-- Install-Banner (Chrome/Android/Desktop) -->
-<div class="install-bar" id="installBar">
-  <span class="msg">Als App installieren — funktioniert auch offline</span>
-  <button class="btn-install" onclick="installApp()">&#8659; Installieren</button>
-  <button class="install-dismiss" onclick="document.getElementById('installBar').style.display='none'" title="Schließen">&times;</button>
-</div>
-
-<!-- iOS-Hinweis (Safari kennt kein beforeinstallprompt) -->
-<div class="ios-hint" id="iosHint">
-  <strong>App speichern:</strong> Teilen-Symbol &#x2197; &rarr; <strong>Zum Home-Bildschirm</strong>
-</div>
-
 <header>
   <div class="logo">Au<em>rum</em></div>
   <div class="tagline">Gold Portfolio · XAU/EUR</div>
+  <button class="btn-header-install" id="installBtn" onclick="openInstallModal()">&#8659; App</button>
 </header>
+
+<!-- Install-Modal -->
+<div class="modal-backdrop" id="installModal" onclick="if(event.target===this)closeInstallModal()">
+  <div class="modal">
+    <div class="modal-ttl">App installieren</div>
+    <div class="modal-steps" id="installSteps"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-install" id="btnModalInstall" onclick="installApp()">&#8659; Jetzt installieren</button>
+      <button class="btn-modal-close" onclick="closeInstallModal()">Schließen</button>
+    </div>
+  </div>
+</div>
 
 <div class="hero">
   <div class="hero-lbl">Portfoliowert</div>
@@ -696,34 +773,77 @@ window.addEventListener('resize', () => {
   }, 150);
 });
 
-// ── PWA Install ─────────────────────────────────────────────────────────
+// ── PWA Install ──────────────────────────────────────────────────────────
 let installPrompt = null;
+
+const isStandalone = window.navigator.standalone === true ||
+  window.matchMedia('(display-mode: standalone)').matches;
+const isIOS    = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+// Install-Button zeigen (außer wenn bereits als App geöffnet)
+if (!isStandalone) {
+  document.getElementById('installBtn').style.display = 'block';
+}
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   installPrompt = e;
-  document.getElementById('installBar').style.display = 'flex';
 });
 
 window.addEventListener('appinstalled', () => {
   installPrompt = null;
-  document.getElementById('installBar').style.display = 'none';
+  document.getElementById('installBtn').style.display = 'none';
+  closeInstallModal();
 });
+
+function openInstallModal() {
+  const steps = document.getElementById('installSteps');
+  const btnInstall = document.getElementById('btnModalInstall');
+
+  if (installPrompt) {
+    // Chrome / Edge / Android – direkte Installation möglich
+    steps.innerHTML = `
+      <div class="step"><span class="num">→</span><span>Klicke auf <strong>„Jetzt installieren"</strong> – der Browser öffnet den Installations-Dialog.</span></div>
+      <div class="step"><span class="num">→</span><span>Die App erscheint dann am Home-Bildschirm und funktioniert <strong>offline</strong>.</span></div>`;
+    btnInstall.style.display = 'block';
+  } else if (isIOS && isSafari) {
+    // iOS Safari
+    steps.innerHTML = `
+      <div class="step"><span class="num">1</span><span>Tippe auf das <strong>Teilen-Symbol</strong> <span style="font-size:13px">⎙</span> unten in Safari.</span></div>
+      <div class="step"><span class="num">2</span><span>Wähle <strong>„Zum Home-Bildschirm"</strong>.</span></div>
+      <div class="step"><span class="num">3</span><span>Namen bestätigen → <strong>„Hinzufügen"</strong> tippen.</span></div>`;
+    btnInstall.style.display = 'none';
+  } else if (isIOS) {
+    // iOS Chrome / andere Browser
+    steps.innerHTML = `
+      <div class="step"><span class="num">→</span><span>Öffne diese Seite in <strong>Safari</strong>, um sie als App zu installieren. iOS erlaubt die Installation nur über Safari.</span></div>
+      <div style="margin-top:8px;font-size:10px;opacity:.6">URL: <strong>cpg23.github.io/Goldentwicklung</strong></div>`;
+    btnInstall.style.display = 'none';
+  } else {
+    // Andere Browser (Firefox, etc.)
+    steps.innerHTML = `
+      <div class="step"><span class="num">→</span><span>Klicke auf das <strong>Installations-Symbol</strong> in der Adressleiste deines Browsers (Chrome: ⊕ rechts oben).</span></div>
+      <div class="step"><span class="num">→</span><span>Oder öffne das Browser-Menü → <strong>„App installieren"</strong>.</span></div>`;
+    btnInstall.style.display = 'none';
+  }
+
+  document.getElementById('installModal').classList.add('open');
+}
+
+function closeInstallModal() {
+  document.getElementById('installModal').classList.remove('open');
+}
 
 async function installApp() {
   if (!installPrompt) return;
   installPrompt.prompt();
   const { outcome } = await installPrompt.userChoice;
-  installPrompt = null;
-  document.getElementById('installBar').style.display = 'none';
-}
-
-// iOS Safari: kein beforeinstallprompt – Hinweis manuell zeigen
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-const isStandalone = window.navigator.standalone === true ||
-  window.matchMedia('(display-mode: standalone)').matches;
-if (isIOS && !isStandalone) {
-  document.getElementById('iosHint').style.display = 'block';
+  if (outcome === 'accepted') {
+    installPrompt = null;
+    document.getElementById('installBtn').style.display = 'none';
+    closeInstallModal();
+  }
 }
 
 // ── Service Worker ──────────────────────────────────────────────────────

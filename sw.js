@@ -1,10 +1,14 @@
 const CACHE = 'aurum-v1';
 const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
-// Beim Install: App-Shell cachen
+// Beim Install: App-Shell cachen — Fehler dürfen die SW-Installation nicht blockieren
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)));
   self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE).then(c =>
+      Promise.allSettled(SHELL.map(url => c.add(url)))
+    )
+  );
 });
 
 // Beim Activate: alte Caches löschen
