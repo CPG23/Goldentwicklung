@@ -329,7 +329,7 @@ footer a:hover { opacity: 1; }
   padding: 5px 12px;
   cursor: pointer;
   white-space: nowrap;
-  display: none;
+  display: block;
 }
 .btn-header-install:hover { background: rgba(201,168,76,.08); }
 
@@ -781,9 +781,9 @@ const isStandalone = window.navigator.standalone === true ||
 const isIOS    = /iPad|iPhone|iPod/.test(navigator.userAgent);
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-// Install-Button zeigen (außer wenn bereits als App geöffnet)
-if (!isStandalone) {
-  document.getElementById('installBtn').style.display = 'block';
+// Install-Button verstecken wenn bereits als App geöffnet
+if (isStandalone) {
+  document.getElementById('installBtn').style.display = 'none';
 }
 
 window.addEventListener('beforeinstallprompt', e => {
