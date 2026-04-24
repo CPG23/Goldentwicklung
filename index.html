@@ -759,7 +759,14 @@ async function autoFetch() {
       return;
     } catch (_) {}
   }
-  setStatus('err', '✗ Abruf fehlgeschlagen – bitte manuell eingeben');
+  // Abruf fehlgeschlagen – gespeicherten Wert verwenden falls vorhanden
+  const saved = localStorage.getItem('aurum_price');
+  if (saved) {
+    renderApp(parseFloat(saved));
+    setStatus('err', '✗ Abruf fehlgeschlagen – letzter gespeicherter Kurs');
+  } else {
+    setStatus('err', '✗ Abruf fehlgeschlagen – bitte manuell eingeben');
+  }
   btn.disabled = false; btn.textContent = '↻';
 }
 
@@ -850,8 +857,23 @@ async function installApp() {
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 
 // ── Init ────────────────────────────────────────────────────────────────
-const saved = localStorage.getItem('aurum_price');
-renderApp(saved ? parseFloat(saved) : 4260);
+function showLoadingState() {
+  document.getElementById('heroVal').textContent = '—';
+  document.getElementById('heroGain').textContent = '';
+  document.getElementById('heroStats').innerHTML = [
+    'Investiert', 'Unzen', 'Kurs'
+  ].map(lbl => `<div class="hero-stat"><div class="lbl">${lbl}</div><div class="val">…</div></div>`).join('');
+  document.getElementById('buyGrid').innerHTML = BUYS.map((b, i) =>
+    `<div class="buy-card">
+      <div class="buy-ttl">Kauf ${i+1} · ${b.date}</div>
+      <div class="brow"><span class="k">Investiert</span><span>${fe(b.inv, 0)}</span></div>
+      <div class="brow"><span class="k">Aktueller Wert</span><span>…</span></div>
+      <div class="brow"><span class="k">G/V</span><span>…</span></div>
+    </div>`
+  ).join('');
+}
+
+showLoadingState();
 setupChartHover();
 autoFetch();
 </script>
