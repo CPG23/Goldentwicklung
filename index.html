@@ -60,25 +60,18 @@ header {
 }
 .price-section { margin-top:18px; padding:14px 24px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
 .price-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.price-input, .key-input {
+.price-input {
   background:var(--bg3); border:1px solid var(--border-s); color:var(--gold-l);
-  font-family:'JetBrains Mono', monospace; outline:none;
+  font-family:'JetBrains Mono', monospace; outline:none; font-size:16px; padding:7px 12px; width:140px; text-align:right;
 }
-.price-input { font-size:16px; padding:7px 12px; width:140px; text-align:right; }
-.key-input { font-size:11px; padding:7px 10px; width:min(260px, 100%); }
-.price-input:focus, .key-input:focus { border-color:var(--gold); }
+.price-input:focus { border-color:var(--gold); }
 .unit { font-size:10px; color:var(--dim); }
-.btn-fetch, .btn-manual, .btn-key {
-  font-family:'JetBrains Mono', monospace; cursor:pointer; line-height:1;
-}
+.btn-fetch, .btn-manual { font-family:'JetBrains Mono', monospace; cursor:pointer; line-height:1; }
 .btn-fetch { background:transparent; border:1px solid var(--border-s); color:var(--gold); font-size:15px; padding:6px 11px; }
 .btn-fetch:disabled { opacity:.35; cursor:default; }
-.btn-manual, .btn-key {
-  background:var(--gold); color:var(--bg); border:none; font-size:9px; letter-spacing:.14em; text-transform:uppercase; padding:8px 16px;
-}
+.btn-manual { background:var(--gold); color:var(--bg); border:none; font-size:9px; letter-spacing:.14em; text-transform:uppercase; padding:8px 16px; }
 .google-link { font-size:9px; color:var(--gold); text-decoration:none; opacity:.6; white-space:nowrap; margin-left:auto; }
 .google-link:hover { opacity:1; }
-.api-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
 .fetch-status { font-size:9px; color:var(--muted); margin-top:7px; }
 .fetch-status.ok { color:var(--green); }
 .fetch-status.err { color:var(--red); }
@@ -155,11 +148,6 @@ footer a { color:var(--gold); opacity:.6; text-decoration:none; }
     <button class="btn-manual" onclick="applyPrice()">✓ Manuell</button>
     <a class="google-link" href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">↗ Google</a>
   </div>
-  <div class="api-row">
-    <span class="price-lbl">Metals.Dev Key</span>
-    <input class="key-input" id="apiKeyInput" type="password" autocomplete="off" placeholder="API-Key eintragen">
-    <button class="btn-key" onclick="saveApiKey()">Speichern</button>
-  </div>
   <div class="fetch-status" id="fetchStatus"></div>
 </div>
 
@@ -173,6 +161,7 @@ footer a { color:var(--gold); opacity:.6; text-decoration:none; }
 </footer>
 
 <script>
+const METALS_DEV_API_KEY = 'KFZ27TLO8O8NBVD5P9DW891D5P9DW';
 const BUYS = [
   { date:"2020-03-18", ppo:1400, inv:10000 },
   { date:"2022-07-13", ppo:1700, inv:5624  },
@@ -193,7 +182,6 @@ const f = (n, d=2) => n.toLocaleString('de-AT', {minimumFractionDigits:d, maximu
 const fe = (n, d=2) => '€\u202f' + f(n, d);
 const ym = s => s.slice(0,7);
 let chartPts = [];
-
 function loadHistory() { try { return JSON.parse(localStorage.getItem('aurum_history') || '[]'); } catch { return []; } }
 function saveHistory(h) { localStorage.setItem('aurum_history', JSON.stringify(h.slice(-730))); }
 function recordPrice(price) {
@@ -207,15 +195,6 @@ function setStatus(cls, msg) {
   const el = document.getElementById('fetchStatus');
   el.className = 'fetch-status' + (cls ? ' ' + cls : '');
   el.textContent = msg;
-}
-function getApiKey() { return localStorage.getItem('aurum_metals_dev_key') || ''; }
-function saveApiKey() {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key) { localStorage.removeItem('aurum_metals_dev_key'); setStatus('err', 'API-Key entfernt'); return; }
-  localStorage.setItem('aurum_metals_dev_key', key);
-  document.getElementById('apiKeyInput').value = '';
-  setStatus('ok', '✓ Metals.Dev Key gespeichert');
-  autoFetch();
 }
 function showLoadingState() {
   document.getElementById('heroVal').textContent = '—';
@@ -302,9 +281,7 @@ function applyPrice() {
   renderApp(v);
 }
 async function tryMetalsDev() {
-  const key = getApiKey();
-  if (!key) throw new Error('Kein Metals.Dev API-Key gespeichert');
-  const url = 'https://api.metals.dev/v1/latest?api_key=' + encodeURIComponent(key) + '&currency=EUR&unit=toz';
+  const url = 'https://api.metals.dev/v1/latest?api_key=' + encodeURIComponent(METALS_DEV_API_KEY) + '&currency=EUR&unit=toz';
   const r = await fetch(url, {headers:{Accept:'application/json'}});
   const d = await r.json().catch(() => null);
   if (!r.ok || d?.status === 'failure') throw new Error(d?.message || 'Metals.Dev ' + r.status);
@@ -325,7 +302,7 @@ async function autoFetch() {
     const stamp = timestamp ? new Date(timestamp).toLocaleTimeString('de-AT') : new Date().toLocaleTimeString('de-AT');
     setStatus('ok', '✓ ' + stamp + ' — ' + source);
   } catch (err) {
-    setStatus('err', '✗ ' + err.message + ' — bitte Key prüfen oder manuell eingeben');
+    setStatus('err', '✗ ' + err.message + ' — bitte manuell eingeben');
   } finally {
     btn.disabled = false; btn.textContent = '↻';
   }
@@ -354,7 +331,7 @@ async function installApp() { if (!installPrompt) return; installPrompt.prompt()
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 showLoadingState();
 setupChartHover();
-if (getApiKey()) autoFetch(); else setStatus('', 'Metals.Dev API-Key eintragen oder Kurs manuell setzen');
+autoFetch();
 </script>
 </body>
 </html>
