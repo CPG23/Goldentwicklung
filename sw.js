@@ -1,7 +1,7 @@
-const CACHE = 'aurum-v1';
+const CACHE = 'aurum-v2';
 const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
-// Beim Install: App-Shell cachen — Fehler dürfen die SW-Installation nicht blockieren
+// Beim Install: App-Shell cachen - Fehler duerfen die SW-Installation nicht blockieren
 self.addEventListener('install', e => {
   self.skipWaiting();
   e.waitUntil(
@@ -11,7 +11,7 @@ self.addEventListener('install', e => {
   );
 });
 
-// Beim Activate: alte Caches löschen
+// Beim Activate: alte Caches loeschen
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -27,10 +27,7 @@ self.addEventListener('fetch', e => {
 
   // Externe APIs: immer vom Netz (kein Caching)
   if (
-    url.includes('coinbase.com') ||
-    url.includes('ecb.europa.eu') ||
-    url.includes('frankfurter.app') ||
-    url.includes('freegoldapi.com') ||
+    url.includes('metals.dev') ||
     url.includes('fonts.googleapis.com') ||
     url.includes('fonts.gstatic.com')
   ) {
