@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aurum – Gold Portfolio</title>
+<title>Aurum - Gold Portfolio</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#C9A84C">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,412 +13,114 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --gold:   #C9A84C;
-  --gold-l: #E8C97A;
-  --gold-d: #7A6030;
-  --bg:     #0D0C0A;
-  --bg2:    #131110;
-  --bg3:    #1C1916;
-  --bg4:    #242018;
-  --text:   #E8DFD0;
-  --muted:  #8A8070;
-  --dim:    #504840;
-  --green:  #5A9A6A;
-  --red:    #9A5A5A;
-  --border: rgba(201,168,76,.12);
-  --border-s: rgba(201,168,76,.28);
+  --gold:#C9A84C; --gold-l:#E8C97A; --gold-d:#7A6030;
+  --bg:#0D0C0A; --bg2:#131110; --bg3:#1C1916;
+  --text:#E8DFD0; --muted:#8A8070; --dim:#504840;
+  --green:#5A9A6A; --red:#9A5A5A;
+  --border:rgba(201,168,76,.12); --border-s:rgba(201,168,76,.28);
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior:smooth; }
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 300;
-  min-height: 100vh;
-  max-width: 860px;
-  margin: 0 auto;
+  background:var(--bg); color:var(--text); font-family:'JetBrains Mono', monospace;
+  font-weight:300; min-height:100vh; max-width:860px; margin:0 auto;
 }
-
-/* ── Header ── */
 header {
-  padding: 22px 24px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
+  padding:22px 24px 16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:baseline; gap:14px;
 }
-.logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.9rem;
-  font-weight: 300;
-  color: var(--gold);
-  letter-spacing: .02em;
-}
-.logo em { font-style: italic; color: var(--gold-l); }
-.tagline {
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-
-/* ── Hero ── */
-.hero {
-  padding: 28px 24px 20px;
-}
-.hero-lbl {
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-.hero-val {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.6rem, 9vw, 4.2rem);
-  font-weight: 300;
-  color: var(--gold-l);
-  line-height: 1;
-  letter-spacing: -.01em;
-}
-.hero-gain {
-  font-size: 13px;
-  margin-top: 7px;
-  letter-spacing: .02em;
-}
-.hero-stats {
-  display: flex;
-  gap: 28px;
-  margin-top: 18px;
-  flex-wrap: wrap;
-}
-.hero-stat .lbl {
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: .13em;
-  text-transform: uppercase;
-  margin-bottom: 3px;
-}
-.hero-stat .val { font-size: 12px; color: var(--text); }
-.pos { color: var(--green) !important; }
-.neg { color: var(--red)   !important; }
-
-/* ── Chart ── */
-.chart-section {
-  padding: 0 24px 4px;
-}
-.chart-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.chart-ttl {
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: .16em;
-  text-transform: uppercase;
-}
-.chart-legend {
-  display: flex;
-  gap: 14px;
-  font-size: 9px;
-  color: var(--muted);
-}
-.dot {
-  display: inline-block;
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-#chart {
-  width: 100%;
-  height: 200px;
-  display: block;
-  overflow: visible;
-  cursor: crosshair;
-}
-.tooltip {
-  position: absolute;
-  background: var(--bg3);
-  border: 1px solid var(--border-s);
-  color: var(--text);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  padding: 6px 10px;
-  pointer-events: none;
-  display: none;
-  white-space: nowrap;
-  z-index: 10;
-}
-
-/* ── Price bar ── */
-.price-section {
-  margin-top: 18px;
-  padding: 14px 24px;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-.price-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.price-lbl {
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.price-input {
-  background: var(--bg3);
-  border: 1px solid var(--border-s);
-  color: var(--gold-l);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 16px;
-  padding: 7px 12px;
-  width: 140px;
-  outline: none;
-  text-align: right;
-  -moz-appearance: textfield;
-}
-.price-input::-webkit-outer-spin-button,
-.price-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-.price-input:focus { border-color: var(--gold); }
-.unit { font-size: 10px; color: var(--dim); }
-
-.btn-fetch {
-  background: transparent;
-  border: 1px solid var(--border-s);
-  color: var(--gold);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 15px;
-  padding: 6px 11px;
-  cursor: pointer;
-  line-height: 1;
-  transition: border-color .15s;
-}
-.btn-fetch:hover { border-color: var(--gold); }
-.btn-fetch:disabled { opacity: .35; cursor: default; }
-.btn-manual {
-  background: var(--gold);
-  color: var(--bg);
-  border: none;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-.btn-manual:active { background: var(--gold-l); }
-.google-link {
-  font-size: 9px;
-  color: var(--gold);
-  text-decoration: none;
-  opacity: .6;
-  white-space: nowrap;
-  margin-left: auto;
-}
-.google-link:hover { opacity: 1; }
-.fetch-status {
-  font-size: 9px;
-  color: var(--muted);
-  margin-top: 7px;
-}
-.fetch-status.ok  { color: var(--green); }
-.fetch-status.err { color: var(--red); }
-
-/* ── Positions ── */
-.section-lbl {
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  padding: 20px 24px 10px;
-}
-.buys {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2px;
-  background: var(--border);
-}
-.buy-card {
-  background: var(--bg2);
-  padding: 16px 24px;
-  border-left: 2px solid var(--gold-d);
-  transition: border-color .15s;
-}
-.buy-card:hover { border-left-color: var(--gold); }
-.buy-ttl {
-  font-size: 9px;
-  color: var(--gold);
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  margin-bottom: 11px;
-}
-.brow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  margin-bottom: 5px;
-}
-.brow .k { color: var(--muted); }
-
-/* ── Footer ── */
-footer {
-  text-align: center;
-  font-size: 9px;
-  color: var(--dim);
-  padding: 20px 24px;
-  border-top: 1px solid var(--border);
-  margin-top: 16px;
-  line-height: 2;
-}
-footer a { color: var(--gold); opacity: .6; text-decoration: none; }
-footer a:hover { opacity: 1; }
-
-/* ── Install ── */
-.install-bar {
-  display: none;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 24px;
-  background: var(--bg3);
-  border-bottom: 1px solid var(--border-s);
-}
-.install-bar .msg { font-size: 11px; color: var(--muted); flex: 1; }
-.btn-install {
-  background: var(--gold);
-  color: var(--bg);
-  border: none;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  padding: 7px 14px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.btn-install:active { background: var(--gold-l); }
-.install-dismiss {
-  background: none;
-  border: none;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 18px;
-  line-height: 1;
-  padding: 0 2px;
-}
-.install-dismiss:hover { color: var(--text); }
-
-/* ── Install-Button im Header ── */
+.logo { font-family:'Cormorant Garamond', serif; font-size:1.9rem; font-weight:300; color:var(--gold); letter-spacing:.02em; }
+.logo em { font-style:italic; color:var(--gold-l); }
+.tagline { font-size:9px; color:var(--muted); letter-spacing:.18em; text-transform:uppercase; }
 .btn-header-install {
-  margin-left: auto;
-  background: transparent;
-  border: 1px solid var(--border-s);
-  color: var(--gold);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .13em;
-  text-transform: uppercase;
-  padding: 5px 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  display: block;
+  margin-left:auto; background:transparent; border:1px solid var(--border-s); color:var(--gold);
+  font-family:'JetBrains Mono', monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase;
+  padding:5px 12px; cursor:pointer; white-space:nowrap;
 }
-.btn-header-install:hover { background: rgba(201,168,76,.08); }
-
-/* ── Install-Modal ── */
-.modal-backdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.7);
-  z-index: 100;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+.hero { padding:28px 24px 20px; }
+.hero-lbl, .chart-ttl, .price-lbl, .section-lbl {
+  font-size:9px; color:var(--muted); letter-spacing:.16em; text-transform:uppercase;
 }
-.modal-backdrop.open { display: flex; }
-.modal {
-  background: var(--bg3);
-  border: 1px solid var(--border-s);
-  padding: 28px 28px 24px;
-  max-width: 380px;
-  width: 100%;
+.hero-lbl { margin-bottom:6px; }
+.hero-val { font-family:'Cormorant Garamond', serif; font-size:clamp(2.6rem, 9vw, 4.2rem); font-weight:300; color:var(--gold-l); line-height:1; }
+.hero-gain { font-size:13px; margin-top:7px; letter-spacing:.02em; }
+.hero-stats { display:flex; gap:28px; margin-top:18px; flex-wrap:wrap; }
+.hero-stat .lbl { font-size:9px; color:var(--muted); letter-spacing:.13em; text-transform:uppercase; margin-bottom:3px; }
+.hero-stat .val { font-size:12px; color:var(--text); }
+.pos { color:var(--green) !important; }
+.neg { color:var(--red) !important; }
+.chart-section { padding:0 24px 4px; }
+.chart-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.chart-legend { display:flex; gap:14px; font-size:9px; color:var(--muted); }
+.dot { display:inline-block; width:6px; height:6px; border-radius:50%; vertical-align:middle; margin-right:4px; }
+#chart { width:100%; height:200px; display:block; overflow:visible; cursor:crosshair; }
+.tooltip {
+  position:absolute; background:var(--bg3); border:1px solid var(--border-s); color:var(--text);
+  font-size:10px; padding:6px 10px; pointer-events:none; display:none; white-space:nowrap; z-index:10;
 }
-.modal-ttl {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.4rem;
-  font-weight: 300;
-  color: var(--gold-l);
-  margin-bottom: 16px;
+.price-section { margin-top:18px; padding:14px 24px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.price-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.price-input, .key-input {
+  background:var(--bg3); border:1px solid var(--border-s); color:var(--gold-l);
+  font-family:'JetBrains Mono', monospace; outline:none;
 }
-.modal-steps {
-  font-size: 11px;
-  color: var(--muted);
-  line-height: 2;
-  margin-bottom: 20px;
+.price-input { font-size:16px; padding:7px 12px; width:140px; text-align:right; }
+.key-input { font-size:11px; padding:7px 10px; width:min(260px, 100%); }
+.price-input:focus, .key-input:focus { border-color:var(--gold); }
+.unit { font-size:10px; color:var(--dim); }
+.btn-fetch, .btn-manual, .btn-key {
+  font-family:'JetBrains Mono', monospace; cursor:pointer; line-height:1;
 }
-.modal-steps strong { color: var(--text); font-weight: 400; }
-.modal-steps .step {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 6px;
+.btn-fetch { background:transparent; border:1px solid var(--border-s); color:var(--gold); font-size:15px; padding:6px 11px; }
+.btn-fetch:disabled { opacity:.35; cursor:default; }
+.btn-manual, .btn-key {
+  background:var(--gold); color:var(--bg); border:none; font-size:9px; letter-spacing:.14em; text-transform:uppercase; padding:8px 16px;
 }
-.modal-steps .num {
-  color: var(--gold);
-  min-width: 16px;
+.google-link { font-size:9px; color:var(--gold); text-decoration:none; opacity:.6; white-space:nowrap; margin-left:auto; }
+.google-link:hover { opacity:1; }
+.api-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
+.fetch-status { font-size:9px; color:var(--muted); margin-top:7px; }
+.fetch-status.ok { color:var(--green); }
+.fetch-status.err { color:var(--red); }
+.section-lbl { padding:20px 24px 10px; }
+.buys { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:2px; background:var(--border); }
+.buy-card { background:var(--bg2); padding:16px 24px; border-left:2px solid var(--gold-d); }
+.buy-card:hover { border-left-color:var(--gold); }
+.buy-ttl { font-size:9px; color:var(--gold); letter-spacing:.14em; text-transform:uppercase; margin-bottom:11px; }
+.brow { display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px; gap:12px; }
+.brow .k { color:var(--muted); }
+footer { text-align:center; font-size:9px; color:var(--dim); padding:20px 24px; border-top:1px solid var(--border); margin-top:16px; line-height:2; }
+footer a { color:var(--gold); opacity:.6; text-decoration:none; }
+.modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:100; align-items:center; justify-content:center; padding:24px; }
+.modal-backdrop.open { display:flex; }
+.modal { background:var(--bg3); border:1px solid var(--border-s); padding:28px 28px 24px; max-width:380px; width:100%; }
+.modal-ttl { font-family:'Cormorant Garamond', serif; font-size:1.4rem; color:var(--gold-l); margin-bottom:16px; }
+.modal-steps { font-size:11px; color:var(--muted); line-height:2; margin-bottom:20px; }
+.modal-steps strong { color:var(--text); font-weight:400; }
+.modal-steps .step { display:flex; gap:10px; margin-bottom:6px; }
+.modal-steps .num { color:var(--gold); min-width:16px; }
+.modal-actions { display:flex; gap:10px; justify-content:flex-end; }
+.btn-modal-install, .btn-modal-close {
+  font-family:'JetBrains Mono', monospace; font-size:9px; letter-spacing:.14em; text-transform:uppercase; padding:8px 16px; cursor:pointer;
 }
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-.btn-modal-install {
-  background: var(--gold);
-  color: var(--bg);
-  border: none;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  padding: 8px 16px;
-  cursor: pointer;
-  display: none;
-}
-.btn-modal-install:active { background: var(--gold-l); }
-.btn-modal-close {
-  background: transparent;
-  border: 1px solid var(--border-s);
-  color: var(--muted);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-.btn-modal-close:hover { color: var(--text); }
+.btn-modal-install { background:var(--gold); color:var(--bg); border:none; display:none; }
+.btn-modal-close { background:transparent; border:1px solid var(--border-s); color:var(--muted); }
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">Au<em>rum</em></div>
   <div class="tagline">Gold Portfolio · XAU/EUR</div>
-  <button class="btn-header-install" id="installBtn" onclick="openInstallModal()">&#8659; App</button>
+  <button class="btn-header-install" id="installBtn" onclick="openInstallModal()">⇓ App</button>
 </header>
 
-<!-- Install-Modal -->
 <div class="modal-backdrop" id="installModal" onclick="if(event.target===this)closeInstallModal()">
   <div class="modal">
     <div class="modal-ttl">App installieren</div>
     <div class="modal-steps" id="installSteps"></div>
     <div class="modal-actions">
-      <button class="btn-modal-install" id="btnModalInstall" onclick="installApp()">&#8659; Jetzt installieren</button>
-      <button class="btn-modal-close" onclick="closeInstallModal()">Schließen</button>
+      <button class="btn-modal-install" id="btnModalInstall" onclick="installApp()">⇓ Jetzt installieren</button>
+      <button class="btn-modal-close" onclick="closeInstallModal()">Schliessen</button>
     </div>
   </div>
 </div>
@@ -447,11 +149,16 @@ footer a:hover { opacity: 1; }
 <div class="price-section">
   <div class="price-row">
     <span class="price-lbl">Goldkurs</span>
-    <input class="price-input" id="priceInput" type="number" min="100" max="99999" step="1" value="4260">
+    <input class="price-input" id="priceInput" type="number" min="100" max="99999" step="1" value="">
     <span class="unit">EUR/oz</span>
     <button class="btn-fetch" id="fetchBtn" onclick="autoFetch()" title="Automatisch abrufen">↻</button>
     <button class="btn-manual" onclick="applyPrice()">✓ Manuell</button>
     <a class="google-link" href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">↗ Google</a>
+  </div>
+  <div class="api-row">
+    <span class="price-lbl">Metals.Dev Key</span>
+    <input class="key-input" id="apiKeyInput" type="password" autocomplete="off" placeholder="API-Key eintragen">
+    <button class="btn-key" onclick="saveApiKey()">Speichern</button>
   </div>
   <div class="fetch-status" id="fetchStatus"></div>
 </div>
@@ -460,9 +167,9 @@ footer a:hover { opacity: 1; }
 <div class="buys" id="buyGrid"></div>
 
 <footer>
-  Historische Kurse: LBMA-Monatsdurchschnitte &middot; Live-Kurs: Coinbase<br>
+  Historische Kurse: LBMA-Monatsdurchschnitte · Live-Kurs: Metals.Dev<br>
   <a href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">Kurs nachschlagen ↗</a>
-  &middot; Keine Anlageberatung
+  · Keine Anlageberatung
 </footer>
 
 <script>
@@ -472,228 +179,120 @@ const BUYS = [
 ];
 BUYS.forEach(b => b.oz = b.inv / b.ppo);
 const TOT_INV = BUYS.reduce((s,b) => s + b.inv, 0);
-const TOT_OZ  = BUYS.reduce((s,b) => s + b.oz,  0);
-
+const TOT_OZ = BUYS.reduce((s,b) => s + b.oz, 0);
 const HIST = [
-  {d:"2020-03",p:1468},{d:"2020-04",p:1547},{d:"2020-05",p:1574},
-  {d:"2020-06",p:1590},{d:"2020-07",p:1677},{d:"2020-08",p:1768},
-  {d:"2020-09",p:1727},{d:"2020-10",p:1670},{d:"2020-11",p:1640},{d:"2020-12",p:1612},
-  {d:"2021-01",p:1573},{d:"2021-02",p:1562},{d:"2021-03",p:1525},
-  {d:"2021-04",p:1541},{d:"2021-05",p:1577},{d:"2021-06",p:1546},
-  {d:"2021-07",p:1543},{d:"2021-08",p:1565},{d:"2021-09",p:1530},
-  {d:"2021-10",p:1561},{d:"2021-11",p:1598},{d:"2021-12",p:1618},
-  {d:"2022-01",p:1720},{d:"2022-02",p:1748},{d:"2022-03",p:1890},
-  {d:"2022-04",p:1830},{d:"2022-05",p:1800},{d:"2022-06",p:1740},
-  {d:"2022-07",p:1672},{d:"2022-08",p:1645},{d:"2022-09",p:1620},
-  {d:"2022-10",p:1660},{d:"2022-11",p:1698},{d:"2022-12",p:1725},
-  {d:"2023-01",p:1790},{d:"2023-02",p:1750},{d:"2023-03",p:1800},
-  {d:"2023-04",p:1860},{d:"2023-05",p:1830},{d:"2023-06",p:1790},
-  {d:"2023-07",p:1820},{d:"2023-08",p:1795},{d:"2023-09",p:1770},
-  {d:"2023-10",p:1840},{d:"2023-11",p:1880},{d:"2023-12",p:1940},
-  {d:"2024-01",p:1955},{d:"2024-02",p:2010},{d:"2024-03",p:2130},
-  {d:"2024-04",p:2215},{d:"2024-05",p:2230},{d:"2024-06",p:2180},
-  {d:"2024-07",p:2250},{d:"2024-08",p:2285},{d:"2024-09",p:2320},
-  {d:"2024-10",p:2390},{d:"2024-11",p:2530},{d:"2024-12",p:2560},
-  {d:"2025-01",p:2610},{d:"2025-02",p:2690},{d:"2025-03",p:2850},
-  {d:"2025-04",p:2920},{d:"2025-05",p:2980},{d:"2025-06",p:3020},
-  {d:"2025-07",p:3060},{d:"2025-08",p:3100},{d:"2025-09",p:3080},
-  {d:"2025-10",p:3120},{d:"2025-11",p:3200},{d:"2025-12",p:3280},
+  {d:"2020-03",p:1468},{d:"2020-04",p:1547},{d:"2020-05",p:1574},{d:"2020-06",p:1590},{d:"2020-07",p:1677},{d:"2020-08",p:1768},{d:"2020-09",p:1727},{d:"2020-10",p:1670},{d:"2020-11",p:1640},{d:"2020-12",p:1612},
+  {d:"2021-01",p:1573},{d:"2021-02",p:1562},{d:"2021-03",p:1525},{d:"2021-04",p:1541},{d:"2021-05",p:1577},{d:"2021-06",p:1546},{d:"2021-07",p:1543},{d:"2021-08",p:1565},{d:"2021-09",p:1530},{d:"2021-10",p:1561},{d:"2021-11",p:1598},{d:"2021-12",p:1618},
+  {d:"2022-01",p:1720},{d:"2022-02",p:1748},{d:"2022-03",p:1890},{d:"2022-04",p:1830},{d:"2022-05",p:1800},{d:"2022-06",p:1740},{d:"2022-07",p:1672},{d:"2022-08",p:1645},{d:"2022-09",p:1620},{d:"2022-10",p:1660},{d:"2022-11",p:1698},{d:"2022-12",p:1725},
+  {d:"2023-01",p:1790},{d:"2023-02",p:1750},{d:"2023-03",p:1800},{d:"2023-04",p:1860},{d:"2023-05",p:1830},{d:"2023-06",p:1790},{d:"2023-07",p:1820},{d:"2023-08",p:1795},{d:"2023-09",p:1770},{d:"2023-10",p:1840},{d:"2023-11",p:1880},{d:"2023-12",p:1940},
+  {d:"2024-01",p:1955},{d:"2024-02",p:2010},{d:"2024-03",p:2130},{d:"2024-04",p:2215},{d:"2024-05",p:2230},{d:"2024-06",p:2180},{d:"2024-07",p:2250},{d:"2024-08",p:2285},{d:"2024-09",p:2320},{d:"2024-10",p:2390},{d:"2024-11",p:2530},{d:"2024-12",p:2560},
+  {d:"2025-01",p:2610},{d:"2025-02",p:2690},{d:"2025-03",p:2850},{d:"2025-04",p:2920},{d:"2025-05",p:2980},{d:"2025-06",p:3020},{d:"2025-07",p:3060},{d:"2025-08",p:3100},{d:"2025-09",p:3080},{d:"2025-10",p:3120},{d:"2025-11",p:3200},{d:"2025-12",p:3280},
   {d:"2026-01",p:3380},{d:"2026-02",p:3500},{d:"2026-03",p:3650},
 ];
-
-const f  = (n, d=2) => n.toLocaleString('de-AT',{minimumFractionDigits:d,maximumFractionDigits:d});
-const fe = (n, d=2) => '€ ' + f(n, d);
+const f = (n, d=2) => n.toLocaleString('de-AT', {minimumFractionDigits:d, maximumFractionDigits:d});
+const fe = (n, d=2) => '€\u202f' + f(n, d);
 const ym = s => s.slice(0,7);
+let chartPts = [];
 
-// ── Price history ──────────────────────────────────────────────────────
-function loadHistory() {
-  try { return JSON.parse(localStorage.getItem('aurum_history') || '[]'); }
-  catch { return []; }
-}
-function saveHistory(h) {
-  localStorage.setItem('aurum_history', JSON.stringify(h.slice(-730)));
-}
+function loadHistory() { try { return JSON.parse(localStorage.getItem('aurum_history') || '[]'); } catch { return []; } }
+function saveHistory(h) { localStorage.setItem('aurum_history', JSON.stringify(h.slice(-730))); }
 function recordPrice(price) {
-  const h   = loadHistory();
+  const h = loadHistory();
   const day = new Date().toISOString().slice(0,10);
   const idx = h.findIndex(e => e.d === day);
   if (idx >= 0) h[idx].p = price; else h.push({d:day, p:price});
   saveHistory(h);
 }
-
-// ── Chart ──────────────────────────────────────────────────────────────
-let chartPts = [];
-
-function buildChartData(livePrice) {
-  const curYM = new Date().toISOString().slice(0,7);
-  // Start from HIST, override with saved personal history
-  const map = new Map(HIST.map(h => [h.d, h.p]));
-  loadHistory().forEach(e => { const m = e.d.slice(0,7); if (map.has(m)) map.set(m, e.p); });
-
-  const pts = [];
-  map.forEach((p, d) => { if (d <= curYM) pts.push({d, p}); });
-  pts.sort((a,b) => a.d.localeCompare(b.d));
-
-  // Ensure current month uses live price
-  if (pts.length && pts[pts.length-1].d === curYM) pts[pts.length-1].p = livePrice;
-  else pts.push({d:curYM, p:livePrice, live:true});
-
-  return pts;
-}
-
-function drawChart(livePrice) {
-  const svg = document.getElementById('chart');
-  const VW  = svg.clientWidth || 800;
-  const VH  = 200;
-  const PAD = {t:18, r:14, b:28, l:8};
-  const W   = VW - PAD.l - PAD.r;
-  const H   = VH - PAD.t - PAD.b;
-
-  svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
-  chartPts = buildChartData(livePrice);
-  const prices = chartPts.map(p => p.p);
-  const minP   = Math.min(...prices) * 0.96;
-  const maxP   = Math.max(...prices) * 1.025;
-
-  const xS = i => PAD.l + (i / (chartPts.length - 1)) * W;
-  const yS = v => PAD.t + H - ((v - minP) / (maxP - minP)) * H;
-
-  // Path
-  let line = '', area = '';
-  chartPts.forEach((pt, i) => {
-    const x = xS(i), y = yS(pt.p);
-    line += (i === 0 ? `M${x},${y}` : ` L${x},${y}`);
-  });
-  area = line + ` L${xS(chartPts.length-1)},${PAD.t+H} L${xS(0)},${PAD.t+H}Z`;
-
-  // Year labels + grid
-  const years = [...new Set(chartPts.map(p => p.d.slice(0,4)))];
-  let yearEls = '';
-  years.forEach(y => {
-    const idx = chartPts.findIndex(p => p.d.startsWith(y));
-    if (idx < 0) return;
-    const x = xS(idx);
-    yearEls += `<line x1="${x}" y1="${PAD.t}" x2="${x}" y2="${PAD.t+H}" stroke="rgba(255,255,255,.04)" stroke-width="1"/>`;
-    yearEls += `<text x="${x+3}" y="${VH-6}" font-size="8" fill="rgba(138,128,112,.55)" font-family="JetBrains Mono,monospace">${y}</text>`;
-  });
-
-  // Price grid lines
-  const steps = 4;
-  let gridEls = '';
-  for (let i = 0; i <= steps; i++) {
-    const v = minP + (maxP - minP) * (i / steps);
-    const y = yS(v);
-    gridEls += `<line x1="${PAD.l}" y1="${y}" x2="${VW-PAD.r}" y2="${y}" stroke="rgba(255,255,255,.04)" stroke-width="1"/>`;
-    if (i > 0 && i < steps) gridEls += `<text x="${VW-PAD.r-2}" y="${y-3}" font-size="7" fill="rgba(138,128,112,.45)" font-family="JetBrains Mono,monospace" text-anchor="end">${Math.round(v)}</text>`;
-  }
-
-  // Buy markers
-  let buyEls = '';
-  BUYS.forEach(b => {
-    const idx = chartPts.findIndex(p => p.d === ym(b.date));
-    if (idx < 0) return;
-    const x = xS(idx), y = yS(chartPts[idx].p);
-    buyEls += `<line x1="${x}" y1="${PAD.t}" x2="${x}" y2="${PAD.t+H}" stroke="rgba(201,168,76,.2)" stroke-width="1" stroke-dasharray="3,3"/>`;
-    buyEls += `<circle cx="${x}" cy="${y}" r="4" fill="var(--bg)" stroke="var(--gold)" stroke-width="1.5"/>`;
-    buyEls += `<circle cx="${x}" cy="${y}" r="1.5" fill="var(--gold-d)"/>`;
-  });
-
-  // Live dot
-  const lx = xS(chartPts.length-1), ly = yS(livePrice);
-  const liveDot = `
-    <circle cx="${lx}" cy="${ly}" r="5" fill="var(--bg)" stroke="var(--gold-l)" stroke-width="1.5"/>
-    <circle cx="${lx}" cy="${ly}" r="2" fill="var(--gold-l)"/>`;
-
-  // Hover line (initially hidden)
-  const hoverLine = `<line id="hline" x1="0" y1="${PAD.t}" x2="0" y2="${PAD.t+H}" stroke="rgba(201,168,76,.35)" stroke-width="1" display="none"/>`;
-
-  svg.innerHTML = `
-<defs>
-  <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%"   stop-color="#C9A84C" stop-opacity=".22"/>
-    <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
-  </linearGradient>
-</defs>
-${gridEls}${yearEls}
-<path d="${area}" fill="url(#ag)"/>
-<path d="${line}" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round"/>
-${buyEls}${liveDot}${hoverLine}`;
-}
-
-// Chart hover / tooltip
-function setupChartHover() {
-  const svg     = document.getElementById('chart');
-  const tooltip = document.getElementById('tooltip');
-  const wrap    = svg.parentElement;
-
-  svg.addEventListener('mousemove', e => {
-    if (!chartPts.length) return;
-    const rect = svg.getBoundingClientRect();
-    const VW   = svg.clientWidth;
-    const PAD  = {t:18, r:14, b:28, l:8};
-    const W    = VW - PAD.l - PAD.r;
-    const relX = e.clientX - rect.left - PAD.l;
-    const idx  = Math.round((relX / W) * (chartPts.length - 1));
-    const pt   = chartPts[Math.max(0, Math.min(idx, chartPts.length-1))];
-    if (!pt) return;
-
-    const xS = i => PAD.l + (i / (chartPts.length - 1)) * W;
-    const cl = Math.max(0, Math.min(idx, chartPts.length-1));
-    const px = xS(cl);
-    const hl = svg.querySelector('#hline');
-    if (hl) { hl.setAttribute('x1', px); hl.setAttribute('x2', px); hl.setAttribute('display',''); }
-
-    tooltip.style.display  = 'block';
-    tooltip.style.left     = (e.clientX - wrap.getBoundingClientRect().left + 12) + 'px';
-    tooltip.style.top      = (e.clientY - wrap.getBoundingClientRect().top  - 36) + 'px';
-    tooltip.textContent    = pt.d + '  ·  ' + fe(pt.p, 0) + '/oz';
-  });
-  svg.addEventListener('mouseleave', () => {
-    tooltip.style.display = 'none';
-    const hl = svg.querySelector('#hline');
-    if (hl) hl.setAttribute('display','none');
-  });
-}
-
-// ── Render ─────────────────────────────────────────────────────────────
-function renderApp(livePrice) {
-  recordPrice(livePrice);
-
-  const val  = TOT_OZ * livePrice;
-  const gain = val - TOT_INV;
-  const gPct = gain / TOT_INV * 100;
-  const cls  = gain >= 0 ? 'pos' : 'neg';
-
-  document.getElementById('heroVal').textContent = fe(val, 0);
-
-  const gEl = document.getElementById('heroGain');
-  gEl.className = 'hero-gain ' + cls;
-  gEl.textContent = (gain >= 0 ? '+' : '') + fe(gain, 0) + '  ·  ' + (gPct >= 0 ? '+' : '') + f(gPct, 1) + ' %';
-
-  document.getElementById('heroStats').innerHTML = [
-    {lbl:'Investiert', val: fe(TOT_INV, 0)},
-    {lbl:'Unzen',      val: f(TOT_OZ, 4) + ' oz'},
-    {lbl:'Kurs',       val: fe(livePrice, 0) + '/oz'},
-  ].map(s => `<div class="hero-stat"><div class="lbl">${s.lbl}</div><div class="val">${s.val}</div></div>`).join('');
-
-  document.getElementById('buyGrid').innerHTML = BUYS.map((b, i) => {
-    const v = b.oz * livePrice, g = v - b.inv, gP = g / b.inv * 100;
-    return `<div class="buy-card">
-      <div class="buy-ttl">Kauf ${i+1} · ${b.date}</div>
-      <div class="brow"><span class="k">Investiert</span><span>${fe(b.inv, 0)}</span></div>
-      <div class="brow"><span class="k">Aktueller Wert</span><span>${fe(v, 0)}</span></div>
-      <div class="brow"><span class="k">G/V</span><span class="${g>=0?'pos':'neg'}">${g>=0?'+':''}${fe(g,0)} (${f(gP,1)} %)</span></div>
-    </div>`;
-  }).join('');
-
-  drawChart(livePrice);
-}
-
-// ── Price controls ──────────────────────────────────────────────────────
 function setStatus(cls, msg) {
   const el = document.getElementById('fetchStatus');
   el.className = 'fetch-status' + (cls ? ' ' + cls : '');
   el.textContent = msg;
+}
+function getApiKey() { return localStorage.getItem('aurum_metals_dev_key') || ''; }
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) { localStorage.removeItem('aurum_metals_dev_key'); setStatus('err', 'API-Key entfernt'); return; }
+  localStorage.setItem('aurum_metals_dev_key', key);
+  document.getElementById('apiKeyInput').value = '';
+  setStatus('ok', '✓ Metals.Dev Key gespeichert');
+  autoFetch();
+}
+function showLoadingState() {
+  document.getElementById('heroVal').textContent = '—';
+  document.getElementById('heroGain').textContent = '';
+  document.getElementById('heroStats').innerHTML = ['Investiert', 'Unzen', 'Kurs'].map(lbl => `<div class="hero-stat"><div class="lbl">${lbl}</div><div class="val">…</div></div>`).join('');
+  document.getElementById('buyGrid').innerHTML = BUYS.map((b, i) => `<div class="buy-card"><div class="buy-ttl">Kauf ${i+1} · ${b.date}</div><div class="brow"><span class="k">Investiert</span><span>${fe(b.inv,0)}</span></div><div class="brow"><span class="k">Aktueller Wert</span><span>…</span></div><div class="brow"><span class="k">G/V</span><span>…</span></div></div>`).join('');
+}
+function renderApp(livePrice) {
+  recordPrice(livePrice);
+  const val = TOT_OZ * livePrice;
+  const gain = val - TOT_INV;
+  const gPct = gain / TOT_INV * 100;
+  const cls = gain >= 0 ? 'pos' : 'neg';
+  document.getElementById('heroVal').textContent = fe(val, 0);
+  const gEl = document.getElementById('heroGain');
+  gEl.className = 'hero-gain ' + cls;
+  gEl.textContent = (gain >= 0 ? '+' : '') + fe(gain, 0) + '  ·  ' + (gPct >= 0 ? '+' : '') + f(gPct, 1) + ' %';
+  document.getElementById('heroStats').innerHTML = [
+    {lbl:'Investiert', val:fe(TOT_INV, 0)}, {lbl:'Unzen', val:f(TOT_OZ, 4) + ' oz'}, {lbl:'Kurs', val:fe(livePrice, 0) + '/oz'},
+  ].map(s => `<div class="hero-stat"><div class="lbl">${s.lbl}</div><div class="val">${s.val}</div></div>`).join('');
+  document.getElementById('buyGrid').innerHTML = BUYS.map((b, i) => {
+    const v = b.oz * livePrice, g = v - b.inv, gP = g / b.inv * 100;
+    return `<div class="buy-card"><div class="buy-ttl">Kauf ${i+1} · ${b.date}</div><div class="brow"><span class="k">Investiert</span><span>${fe(b.inv,0)}</span></div><div class="brow"><span class="k">Aktueller Wert</span><span>${fe(v,0)}</span></div><div class="brow"><span class="k">G/V</span><span class="${g>=0?'pos':'neg'}">${g>=0?'+':''}${fe(g,0)} (${f(gP,1)} %)</span></div></div>`;
+  }).join('');
+  drawChart(livePrice);
+}
+function buildChartData(livePrice) {
+  const curYM = new Date().toISOString().slice(0,7);
+  const map = new Map(HIST.map(h => [h.d, h.p]));
+  loadHistory().forEach(e => { const m = e.d.slice(0,7); if (map.has(m)) map.set(m, e.p); });
+  const pts = [];
+  map.forEach((p, d) => { if (d <= curYM) pts.push({d, p}); });
+  pts.sort((a,b) => a.d.localeCompare(b.d));
+  if (pts.length && pts[pts.length-1].d === curYM) pts[pts.length-1].p = livePrice; else pts.push({d:curYM, p:livePrice, live:true});
+  return pts;
+}
+function drawChart(livePrice) {
+  const svg = document.getElementById('chart');
+  const VW = svg.clientWidth || 800, VH = 200, PAD = {t:18, r:14, b:28, l:8};
+  const W = VW - PAD.l - PAD.r, H = VH - PAD.t - PAD.b;
+  svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+  chartPts = buildChartData(livePrice);
+  const prices = chartPts.map(p => p.p), minP = Math.min(...prices) * 0.96, maxP = Math.max(...prices) * 1.025;
+  const xS = i => PAD.l + (i / (chartPts.length - 1)) * W;
+  const yS = v => PAD.t + H - ((v - minP) / (maxP - minP)) * H;
+  let line = '', gridEls = '', yearEls = '', buyEls = '';
+  chartPts.forEach((pt, i) => { const x = xS(i), y = yS(pt.p); line += (i === 0 ? `M${x},${y}` : ` L${x},${y}`); });
+  const area = line + ` L${xS(chartPts.length-1)},${PAD.t+H} L${xS(0)},${PAD.t+H}Z`;
+  [...new Set(chartPts.map(p => p.d.slice(0,4)))].forEach(y => {
+    const idx = chartPts.findIndex(p => p.d.startsWith(y)); if (idx < 0) return;
+    const x = xS(idx);
+    yearEls += `<line x1="${x}" y1="${PAD.t}" x2="${x}" y2="${PAD.t+H}" stroke="rgba(255,255,255,.04)"/><text x="${x+3}" y="${VH-6}" font-size="8" fill="rgba(138,128,112,.55)" font-family="JetBrains Mono,monospace">${y}</text>`;
+  });
+  for (let i = 0; i <= 4; i++) {
+    const v = minP + (maxP - minP) * (i / 4), y = yS(v);
+    gridEls += `<line x1="${PAD.l}" y1="${y}" x2="${VW-PAD.r}" y2="${y}" stroke="rgba(255,255,255,.04)"/>`;
+    if (i > 0 && i < 4) gridEls += `<text x="${VW-PAD.r-2}" y="${y-3}" font-size="7" fill="rgba(138,128,112,.45)" font-family="JetBrains Mono,monospace" text-anchor="end">${Math.round(v)}</text>`;
+  }
+  BUYS.forEach(b => {
+    const idx = chartPts.findIndex(p => p.d === ym(b.date)); if (idx < 0) return;
+    const x = xS(idx), y = yS(chartPts[idx].p);
+    buyEls += `<line x1="${x}" y1="${PAD.t}" x2="${x}" y2="${PAD.t+H}" stroke="rgba(201,168,76,.2)" stroke-dasharray="3,3"/><circle cx="${x}" cy="${y}" r="4" fill="var(--bg)" stroke="var(--gold)" stroke-width="1.5"/><circle cx="${x}" cy="${y}" r="1.5" fill="var(--gold-d)"/>`;
+  });
+  const lx = xS(chartPts.length-1), ly = yS(livePrice);
+  svg.innerHTML = `<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C9A84C" stop-opacity=".22"/><stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/></linearGradient></defs>${gridEls}${yearEls}<path d="${area}" fill="url(#ag)"/><path d="${line}" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round"/>${buyEls}<circle cx="${lx}" cy="${ly}" r="5" fill="var(--bg)" stroke="var(--gold-l)" stroke-width="1.5"/><circle cx="${lx}" cy="${ly}" r="2" fill="var(--gold-l)"/><line id="hline" x1="0" y1="${PAD.t}" x2="0" y2="${PAD.t+H}" stroke="rgba(201,168,76,.35)" display="none"/>`;
+}
+function setupChartHover() {
+  const svg = document.getElementById('chart'), tooltip = document.getElementById('tooltip'), wrap = svg.parentElement;
+  svg.addEventListener('mousemove', e => {
+    if (!chartPts.length) return;
+    const rect = svg.getBoundingClientRect(), VW = svg.clientWidth, PAD = {t:18, r:14, b:28, l:8}, W = VW - PAD.l - PAD.r;
+    const idx = Math.round(((e.clientX - rect.left - PAD.l) / W) * (chartPts.length - 1));
+    const cl = Math.max(0, Math.min(idx, chartPts.length - 1)), pt = chartPts[cl], px = PAD.l + (cl / (chartPts.length - 1)) * W;
+    const hl = svg.querySelector('#hline'); if (hl) { hl.setAttribute('x1', px); hl.setAttribute('x2', px); hl.setAttribute('display', ''); }
+    tooltip.style.display = 'block'; tooltip.style.left = (e.clientX - wrap.getBoundingClientRect().left + 12) + 'px'; tooltip.style.top = (e.clientY - wrap.getBoundingClientRect().top - 36) + 'px'; tooltip.textContent = pt.d + '  ·  ' + fe(pt.p, 0) + '/oz';
+  });
+  svg.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; const hl = svg.querySelector('#hline'); if (hl) hl.setAttribute('display', 'none'); });
 }
 function applyPrice() {
   const v = parseFloat(document.getElementById('priceInput').value);
@@ -702,180 +301,60 @@ function applyPrice() {
   setStatus('', '');
   renderApp(v);
 }
-
-async function tryCoinbase() {
-  const r = await fetch('https://api.coinbase.com/v2/exchange-rates?currency=XAU');
-  if (!r.ok) throw new Error('Coinbase ' + r.status);
-  const d = await r.json();
-  const v = parseFloat(d?.data?.rates?.EUR);
-  if (!v || v < 500 || v > 99999) throw new Error('Coinbase: ' + v);
-  return {price: v, source: 'Coinbase'};
+async function tryMetalsDev() {
+  const key = getApiKey();
+  if (!key) throw new Error('Kein Metals.Dev API-Key gespeichert');
+  const url = 'https://api.metals.dev/v1/latest?api_key=' + encodeURIComponent(key) + '&currency=EUR&unit=toz';
+  const r = await fetch(url, {headers:{Accept:'application/json'}});
+  const d = await r.json().catch(() => null);
+  if (!r.ok || d?.status === 'failure') throw new Error(d?.message || 'Metals.Dev ' + r.status);
+  const v = Number(d?.metals?.gold);
+  if (!v || v < 500 || v > 99999) throw new Error('Metals.Dev Format: ' + v);
+  return {price:v, source:'Metals.Dev', timestamp:d.timestamp};
 }
-async function tryECB() {
-  const r = await fetch(
-    'https://data-api.ecb.europa.eu/service/data/EXR/D.XAU.EUR.SP00.A?lastNObservations=1&format=jsondata',
-    {headers: {Accept: 'application/json'}}
-  );
-  if (!r.ok) throw new Error('ECB ' + r.status);
-  const d = await r.json();
-  const ds = d.dataSets[0];
-  const sk = Object.keys(ds.series)[0];
-  const ok = Object.keys(ds.series[sk].observations)[0];
-  let v = ds.series[sk].observations[ok][0];
-  if (v > 0 && v < 10) v = 1 / v;
-  if (v < 500 || v > 99999) throw new Error('ECB: ' + v);
-  return {price: v, source: 'EZB'};
-}
-async function tryFreeGold() {
-  const [gR, fR] = await Promise.all([
-    fetch('https://freegoldapi.com/data/latest.json'),
-    fetch('https://api.frankfurter.app/latest?from=USD&to=EUR'),
-  ]);
-  if (!gR.ok || !fR.ok) throw new Error('FreeGold ' + gR.status);
-  const gd = await gR.json();
-  const fx = await fR.json();
-  const lat = Array.isArray(gd) ? gd[gd.length-1] : gd;
-  const usd = lat?.price ?? lat?.gold ?? lat?.XAU;
-  const eur = fx?.rates?.EUR;
-  if (!usd || !eur) throw new Error('Format unbekannt');
-  const v = usd * eur;
-  if (v < 500 || v > 99999) throw new Error('FreeGold: ' + v);
-  return {price: v, source: 'freegoldapi.com'};
-}
-
 async function autoFetch() {
   const btn = document.getElementById('fetchBtn');
   btn.disabled = true; btn.textContent = '…';
-  setStatus('', 'Kurs wird abgerufen …');
-  for (const src of [tryCoinbase, tryECB, tryFreeGold]) {
-    try {
-      const {price, source} = await src();
-      const p = Math.round(price);
-      document.getElementById('priceInput').value = p;
-      localStorage.setItem('aurum_price', p);
-      renderApp(p);
-      setStatus('ok', '✓ ' + new Date().toLocaleTimeString('de-AT') + ' — ' + source);
-      btn.disabled = false; btn.textContent = '↻';
-      return;
-    } catch (_) {}
+  setStatus('', 'Kurs wird über Metals.Dev abgerufen …');
+  try {
+    const {price, source, timestamp} = await tryMetalsDev();
+    const p = Math.round(price);
+    document.getElementById('priceInput').value = p;
+    localStorage.setItem('aurum_price', p);
+    renderApp(p);
+    const stamp = timestamp ? new Date(timestamp).toLocaleTimeString('de-AT') : new Date().toLocaleTimeString('de-AT');
+    setStatus('ok', '✓ ' + stamp + ' — ' + source);
+  } catch (err) {
+    setStatus('err', '✗ ' + err.message + ' — bitte Key prüfen oder manuell eingeben');
+  } finally {
+    btn.disabled = false; btn.textContent = '↻';
   }
-  // Abruf fehlgeschlagen – gespeicherten Wert verwenden falls vorhanden
-  const saved = localStorage.getItem('aurum_price');
-  if (saved) {
-    renderApp(parseFloat(saved));
-    setStatus('err', '✗ Abruf fehlgeschlagen – letzter gespeicherter Kurs');
-  } else {
-    setStatus('err', '✗ Abruf fehlgeschlagen – bitte manuell eingeben');
-  }
-  btn.disabled = false; btn.textContent = '↻';
 }
-
-// ── Resize chart on window resize ──────────────────────────────────────
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    const p = localStorage.getItem('aurum_price');
-    if (p) drawChart(parseFloat(p));
-  }, 150);
+  resizeTimer = setTimeout(() => { const p = localStorage.getItem('aurum_price'); if (p) drawChart(parseFloat(p)); }, 150);
 });
-
-// ── PWA Install ──────────────────────────────────────────────────────────
 let installPrompt = null;
-
-const isStandalone = window.navigator.standalone === true ||
-  window.matchMedia('(display-mode: standalone)').matches;
-const isIOS    = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-// Install-Button verstecken wenn bereits als App geöffnet
-if (isStandalone) {
-  document.getElementById('installBtn').style.display = 'none';
-}
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  installPrompt = e;
-});
-
-window.addEventListener('appinstalled', () => {
-  installPrompt = null;
-  document.getElementById('installBtn').style.display = 'none';
-  closeInstallModal();
-});
-
+if (isStandalone) document.getElementById('installBtn').style.display = 'none';
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; });
+window.addEventListener('appinstalled', () => { installPrompt = null; document.getElementById('installBtn').style.display = 'none'; closeInstallModal(); });
 function openInstallModal() {
-  const steps = document.getElementById('installSteps');
-  const btnInstall = document.getElementById('btnModalInstall');
-
-  if (installPrompt) {
-    // Chrome / Edge / Android – direkte Installation möglich
-    steps.innerHTML = `
-      <div class="step"><span class="num">→</span><span>Klicke auf <strong>„Jetzt installieren"</strong> – der Browser öffnet den Installations-Dialog.</span></div>
-      <div class="step"><span class="num">→</span><span>Die App erscheint dann am Home-Bildschirm und funktioniert <strong>offline</strong>.</span></div>`;
-    btnInstall.style.display = 'block';
-  } else if (isIOS && isSafari) {
-    // iOS Safari
-    steps.innerHTML = `
-      <div class="step"><span class="num">1</span><span>Tippe auf das <strong>Teilen-Symbol</strong> <span style="font-size:13px">⎙</span> unten in Safari.</span></div>
-      <div class="step"><span class="num">2</span><span>Wähle <strong>„Zum Home-Bildschirm"</strong>.</span></div>
-      <div class="step"><span class="num">3</span><span>Namen bestätigen → <strong>„Hinzufügen"</strong> tippen.</span></div>`;
-    btnInstall.style.display = 'none';
-  } else if (isIOS) {
-    // iOS Chrome / andere Browser
-    steps.innerHTML = `
-      <div class="step"><span class="num">→</span><span>Öffne diese Seite in <strong>Safari</strong>, um sie als App zu installieren. iOS erlaubt die Installation nur über Safari.</span></div>
-      <div style="margin-top:8px;font-size:10px;opacity:.6">URL: <strong>cpg23.github.io/Goldentwicklung</strong></div>`;
-    btnInstall.style.display = 'none';
-  } else {
-    // Andere Browser (Firefox, etc.)
-    steps.innerHTML = `
-      <div class="step"><span class="num">→</span><span>Klicke auf das <strong>Installations-Symbol</strong> in der Adressleiste deines Browsers (Chrome: ⊕ rechts oben).</span></div>
-      <div class="step"><span class="num">→</span><span>Oder öffne das Browser-Menü → <strong>„App installieren"</strong>.</span></div>`;
-    btnInstall.style.display = 'none';
-  }
-
+  const steps = document.getElementById('installSteps'), btnInstall = document.getElementById('btnModalInstall');
+  if (installPrompt) { steps.innerHTML = '<div class="step"><span class="num">→</span><span>Klicke auf <strong>Jetzt installieren</strong>.</span></div>'; btnInstall.style.display = 'block'; }
+  else if (isIOS && isSafari) { steps.innerHTML = '<div class="step"><span class="num">1</span><span>Tippe auf das <strong>Teilen-Symbol</strong> in Safari.</span></div><div class="step"><span class="num">2</span><span>Wähle <strong>Zum Home-Bildschirm</strong>.</span></div>'; btnInstall.style.display = 'none'; }
+  else { steps.innerHTML = '<div class="step"><span class="num">→</span><span>Nutze das Installationssymbol oder Browsermenü.</span></div>'; btnInstall.style.display = 'none'; }
   document.getElementById('installModal').classList.add('open');
 }
-
-function closeInstallModal() {
-  document.getElementById('installModal').classList.remove('open');
-}
-
-async function installApp() {
-  if (!installPrompt) return;
-  installPrompt.prompt();
-  const { outcome } = await installPrompt.userChoice;
-  if (outcome === 'accepted') {
-    installPrompt = null;
-    document.getElementById('installBtn').style.display = 'none';
-    closeInstallModal();
-  }
-}
-
-// ── Service Worker ──────────────────────────────────────────────────────
+function closeInstallModal() { document.getElementById('installModal').classList.remove('open'); }
+async function installApp() { if (!installPrompt) return; installPrompt.prompt(); const {outcome} = await installPrompt.userChoice; if (outcome === 'accepted') { installPrompt = null; document.getElementById('installBtn').style.display = 'none'; closeInstallModal(); } }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
-
-// ── Init ────────────────────────────────────────────────────────────────
-function showLoadingState() {
-  document.getElementById('heroVal').textContent = '—';
-  document.getElementById('heroGain').textContent = '';
-  document.getElementById('heroStats').innerHTML = [
-    'Investiert', 'Unzen', 'Kurs'
-  ].map(lbl => `<div class="hero-stat"><div class="lbl">${lbl}</div><div class="val">…</div></div>`).join('');
-  document.getElementById('buyGrid').innerHTML = BUYS.map((b, i) =>
-    `<div class="buy-card">
-      <div class="buy-ttl">Kauf ${i+1} · ${b.date}</div>
-      <div class="brow"><span class="k">Investiert</span><span>${fe(b.inv, 0)}</span></div>
-      <div class="brow"><span class="k">Aktueller Wert</span><span>…</span></div>
-      <div class="brow"><span class="k">G/V</span><span>…</span></div>
-    </div>`
-  ).join('');
-}
-
 showLoadingState();
 setupChartHover();
-autoFetch();
+if (getApiKey()) autoFetch(); else setStatus('', 'Metals.Dev API-Key eintragen oder Kurs manuell setzen');
 </script>
 </body>
 </html>
