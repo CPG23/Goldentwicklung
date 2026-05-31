@@ -1,4 +1,4 @@
-const CACHE = 'aurum-v3';
+const CACHE = 'aurum-v4';
 const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 // Beim Install: App-Shell cachen - Fehler duerfen die SW-Installation nicht blockieren
