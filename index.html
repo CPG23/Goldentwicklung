@@ -75,6 +75,9 @@ header {
 .fetch-status { font-size:9px; color:var(--muted); margin-top:7px; }
 .fetch-status.ok { color:var(--green); }
 .fetch-status.err { color:var(--red); }
+.fetch-compare { font-size:9px; color:var(--muted); margin-top:5px; }
+.fetch-compare.pos { color:var(--green) !important; }
+.fetch-compare.neg { color:var(--red) !important; }
 .section-lbl { padding:20px 24px 10px; }
 .buys { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:2px; background:var(--border); }
 .buy-card { background:var(--bg2); padding:16px 24px; border-left:2px solid var(--gold-d); }
@@ -149,6 +152,7 @@ footer a { color:var(--gold); opacity:.6; text-decoration:none; }
     <a class="google-link" href="https://www.google.com/search?q=goldkurs+euro+pro+unze" target="_blank">↗ Google</a>
   </div>
   <div class="fetch-status" id="fetchStatus"></div>
+  <div class="fetch-compare" id="fetchCompare"></div>
 </div>
 
 <div class="section-lbl">Positionen</div>
@@ -195,6 +199,25 @@ function setStatus(cls, msg) {
   const el = document.getElementById('fetchStatus');
   el.className = 'fetch-status' + (cls ? ' ' + cls : '');
   el.textContent = msg;
+}
+function setCompare(cls, msg) {
+  const el = document.getElementById('fetchCompare');
+  el.className = 'fetch-compare' + (cls ? ' ' + cls : '');
+  el.textContent = msg;
+}
+function updateFetchCompare(price) {
+  const prev = parseFloat(localStorage.getItem('aurum_last_fetch_price'));
+  const prevAt = localStorage.getItem('aurum_last_fetch_at');
+  if (!prev || prev < 100) {
+    setCompare('', 'Erster automatischer Abruf gespeichert');
+    return;
+  }
+  const diff = price - prev;
+  const pct = diff / prev * 100;
+  const cls = diff >= 0 ? 'pos' : 'neg';
+  const sign = diff >= 0 ? '+' : '';
+  const when = prevAt ? ' seit ' + new Date(prevAt).toLocaleString('de-AT') : ' seit letztem Abruf';
+  setCompare(cls, sign + fe(diff, 0) + '/oz · ' + sign + f(pct, 2) + ' %' + when);
 }
 function showLoadingState() {
   document.getElementById('heroVal').textContent = '—';
@@ -299,6 +322,9 @@ async function autoFetch() {
     document.getElementById('priceInput').value = p;
     localStorage.setItem('aurum_price', p);
     renderApp(p);
+    updateFetchCompare(p);
+    localStorage.setItem('aurum_last_fetch_price', p);
+    localStorage.setItem('aurum_last_fetch_at', new Date().toISOString());
     const stamp = timestamp ? new Date(timestamp).toLocaleTimeString('de-AT') : new Date().toLocaleTimeString('de-AT');
     setStatus('ok', '✓ ' + stamp + ' — ' + source);
   } catch (err) {
